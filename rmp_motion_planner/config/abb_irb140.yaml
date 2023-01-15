@@ -1,0 +1,33 @@
+############
+## Frames ##
+############
+base_frame: 'base_link'
+
+###################
+## DH-Parameters ##
+###################
+joints:
+  - d: 0.352
+    theta: 0.0
+    a: 0.070
+    alpha: -1.5708
+  - d: 0.0
+    theta: -1.5708
+    a: 0.360
+    alpha: 0.0
+  - d: 0.0
+    theta: 0.0
+    a: 0.0
+    alpha: -1.5708
+  - d: 0.380
+    theta: 0.0
+    a: 0.0
+    alpha: 1.5708
+  - d: 0.0
+    theta: 0.0
+    a: 0.0
+    alpha: -1.5708
+  - d: 0.065
+    theta: 0.0
+    a: 0.0
+    alpha: 0.0

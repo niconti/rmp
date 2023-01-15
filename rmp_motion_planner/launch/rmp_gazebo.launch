@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="robot"/>
+  <arg name="debug" default="false"/>
+  <arg name="use_rviz" default="true"/>
+
+  <env if="$(arg debug)"
+       name="ROSCONSOLE_CONFIG_FILE" value="$(find rmp_motion_planner)/rosconsole.conf"/>
+
+  <!-- Planning Pipeline -->
+  <include ns="rmp_motion_planner/ompl" file="$(find moveit_resources_panda_moveit_config)/launch/ompl_planning_pipeline.launch.xml"/>
+
+  <!-- Trajectory Execution  -->
+  <include ns="rmp_motion_planner" file="$(find moveit_resources_panda_moveit_config)/launch/trajectory_execution.launch.xml">
+    <arg name="moveit_controller_manager" value="fake"/>
+  </include>
+
+  <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
+  <include file="$(find moveit_resources_panda_moveit_config)/launch/planning_context.launch">
+    <arg name="load_robot_description" value="true"/>
+  </include>
+
+  <!-- Start robot state publisher -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <rosparam param="source_list">["/panda/joint_states"]</rosparam>
+  </node>
+
+  <!-- -->
+  <node name="rmp_motion_planner" pkg="rmp_motion_planner" type="rmp_motion_planner_node" output="screen">
+    <rosparam file="$(find rmp_motion_planner)/config/moveit_cpp.yaml"/>
+    <rosparam file="$(find rmp_motion_planner)/config/hardware.yaml"/>
+    <param name="planning_group" value="panda_arm"/>
+    <param name="eef_frame" value="panda_hand"/>
+  </node>
+
+  <!-- Launch RViz -->
+  <node if="$(arg use_rviz)"
+        name="$(anon rviz)" pkg="rviz" type="rviz" output="screen"
+        args="--display-config $(find rmp_motion_planner)/rviz/moveit.rviz"/>
+
+</launch>

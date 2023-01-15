@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<package format="2">
+
+  <name>rmp_motion_controller</name>
+  <version>0.0.0</version>
+  <description>
+    Motion controller based on Riemmanian Motion Policies
+  </description>
+  <license>TODO</license>
+
+  <author email="nicola@sysdesign.it">Nicola Conti</author>
+  <maintainer email="nicola@sysdesign.it">Nicola Conti</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>roscpp</depend>
+  <depend>urdf</depend>
+  <depend>kdl_parser</depend>
+  <depend>eigen_conversions</depend>
+  <depend>hardware_interface</depend>
+  <depend>controller_interface</depend>
+  <depend>dynamic_reconfigure</depend>
+  <depend>pluginlib</depend>
+
+  <depend>eigen</depend>
+  <depend>boost</depend>
+  <depend>liborocos-kdl-dev</depend>
+
+  <export>
+    <controller_interface plugin="${prefix}/rmp_motion_controller_plugin.xml"/>
+  </export>
+</package>

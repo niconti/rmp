@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="robot"/>
+  <arg name="robot_moveit_config" default="$(eval arg('robot')+'_moveit_config')"/>
+
+  <!-- Planning Pipeline -->
+  <!-- <include ns="rmp_motion_planner/ompl" file="$(find (arg robot)_moveit_config)/launch/ompl_planning_pipeline.launch.xml"/> -->
+
+  <!-- Trajectory execution  -->
+  <!-- <include ns="rmp_motion_planner" file="$(find (arg robot)_moveit_config)/launch/trajectory_execution.launch.xml">
+    <arg name="moveit_controller_manager" value="fake"/>
+  </include> -->
+
+  <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
+  <include ns="/dsr01" file="$(eval find(robot_moveit_config)+'/launch/planning_context.launch')">
+    <arg name="load_robot_description" value="false"/>
+  </include>
+
+  <!-- Start robot state publisher -->
+  <node ns="/dsr01" name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+  <node ns="/dsr01" name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <rosparam param="source_list">["/dsr01m1013/joint_states"]</rosparam>
+  </node>
+
+  <!-- RViz -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rmp_motion_planner)/rviz/moveit.rviz">
+    <rosparam file="$(eval find(robot_moveit_config)+'/config/kinematics.yaml')"/>
+  </node>
+
+  <!-- -->
+  <node name="rmp_motion_planner" pkg="rmp_motion_planner" type="rmp_motion_planner_node" output="screen">
+    <rosparam file="$(find rmp_motion_planner)/config/moveit_cpp.yaml"/>
+    <rosparam file="$(find rmp_motion_planner)/config/hardware.yaml"/>
+    <param name="planning_group" value="arm"/>
+    <param name="eef_frame" value="link6"/>
+    <remap from="/joint_group_controller/command" to="/dsr01/dsr_joint_position_controller/command"/>
+  </node>
+
+</launch>

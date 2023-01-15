@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<package format="2">
+
+  <name>rmp_motion_planner</name>
+  <version>0.0.0</version>
+  <description>
+    Motion planner based on Riemmanian Motion Policies
+  </description>
+  <license>TODO</license>
+
+  <author email="nicola@sysdesign.it">Nicola Conti</author>
+  <maintainer email="nicola@sysdesign.it">Nicola Conti</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <!-- Catkin Dependencies -->
+  <depend>roscpp</depend>
+  <depend>xmlrpcpp</depend>
+  <depend>tf2</depend>
+  <depend>tf2_eigen</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>moveit_core</depend>
+  <depend>moveit_ros_planning</depend>
+  <depend>moveit_ros_planning_interface</depend>
+  <depend>interactive_markers</depend>
+  <!-- System Dependencies -->
+  <depend>eigen</depend>
+  <depend>boost</depend>
+
+  <exec_depend>moveit_resources_panda_moveit_config</exec_depend>
+
+</package>

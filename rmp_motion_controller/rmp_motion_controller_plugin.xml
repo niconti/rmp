@@ -1,0 +1,21 @@
+<library path="lib/librmp_motion_controller">
+
+  <class name="position_controllers/RiemmanianMotionController"
+         type="position_controllers::RiemmanianMotionController"
+         base_class_type="controller_interface::ControllerBase">
+    <description>
+      The RiemmanianMotionController executes end-effector motion on a set of joints.
+      This variant sends commands to a position interface.
+    </description>
+  </class> 
+
+  <class name="velocity_controllers/RiemmanianMotionController"
+         type="velocity_controllers::RiemmanianMotionController"
+         base_class_type="controller_interface::ControllerBase">
+    <description>
+      The RiemmanianMotionController executes end-effector motion on a set of joints.
+      This variant sends commands to a velocity interface.
+    </description>
+  </class>
+
+</library>

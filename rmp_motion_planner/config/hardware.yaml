@@ -1,0 +1,44 @@
+########################
+## Hardware Interface ##
+########################
+# hardware_interface:
+#    loop_hz: 100
+#    joints:
+#      - panda_joint1
+#      - panda_joint2
+#      - panda_joint3
+#      - panda_joint4
+#      - panda_joint5
+#      - panda_joint6
+#      - panda_joint7
+#      - panda_joint8
+
+# hardware_interface:
+#   loop_hz: 100
+#   joints:
+#     - shoulder_joint
+#     - upperArm_joint
+#     - foreArm_joint
+#     - wrist1_joint
+#     - wrist2_joint
+#     - wrist3_joint
+
+# hardware_interface:
+#   loop_hz: 100
+#   joints:
+#     - elfin_joint1
+#     - elfin_joint2
+#     - elfin_joint3
+#     - elfin_joint4
+#     - elfin_joint5
+#     - elfin_joint6
+
+hardware_interface:
+  loop_hz: 100
+  joints:
+    - joint1
+    - joint2
+    - joint3
+    - joint4
+    - joint5
+    - joint6
