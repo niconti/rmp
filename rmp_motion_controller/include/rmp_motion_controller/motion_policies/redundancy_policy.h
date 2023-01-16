@@ -36,8 +36,8 @@ public:
     this->q = q;
     this->q_goal = q_goal;
 
-    alpha = 0.1;
-    beta  = 0.2;
+    alpha = 1.0;
+    beta  = 2.0;
   }
 
 

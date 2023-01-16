@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package format="2">
+
+  <name>rmp_motion_visualization</name>
+  <version>0.0.0</version>
+  <description>
+    Motion planner based on Riemmanian Motion Policies
+  </description>
+  <license>TODO</license>
+
+  <author email="nicola@sysdesign.it">Nicola Conti</author>
+  <maintainer email="nicola@sysdesign.it">Nicola Conti</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>roscpp</depend>
+  <depend>geometry_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>interactive_markers</depend>
+
+  <depend>eigen</depend>
+  <depend>boost</depend>
+
+</package>

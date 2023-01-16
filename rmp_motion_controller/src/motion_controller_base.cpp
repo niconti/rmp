@@ -9,17 +9,17 @@ MotionPolicy MotionControllerBase<HardwareInterface>::pullback(const XMotionPoli
   Eigen::Vector3d f = x_rmp.f;
   Eigen::Matrix3d A = x_rmp.A;
 
-  std::cout << "XRMP.f:" << std::endl << x_rmp.f << std::endl;
-  std::cout << "XRMP.A:" << std::endl << x_rmp.A << std::endl;
+  // std::cout << "XRMP.f:" << std::endl << x_rmp.f << std::endl;
+  // std::cout << "XRMP.A:" << std::endl << x_rmp.A << std::endl;
 
-  std::cout << "J:" << std::endl << J << std::endl;
+  // std::cout << "J:" << std::endl << J << std::endl;
 
   MotionPolicy q_rmp;
   q_rmp.f = pinv(J.transpose() * A * J) * J.transpose() * A * f;
   q_rmp.A = J.transpose() * A * J;
 
-  std::cout << "QRMP.f:" << std::endl << q_rmp.f << std::endl;
-  std::cout << "QRMP.A:" << std::endl << q_rmp.A << std::endl;
+  // std::cout << "QRMP.f:" << std::endl << q_rmp.f << std::endl;
+  // std::cout << "QRMP.A:" << std::endl << q_rmp.A << std::endl;
 
   return q_rmp;
 }
@@ -76,7 +76,7 @@ void MotionControllerBase<HardwareInterface>::computeMotionPolicies()
     fk_pos_solver->JntToCart(current_jpos, current_xpos);
 
     Eigen::Isometry3d A;
-    // tf::transformKDLToEigen(current_xpos, A);
+    tf::transformKDLToEigen(current_xpos, A);
 
     Eigen::Vector3d x_pos = A * x_rmp->x;
 

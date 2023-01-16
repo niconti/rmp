@@ -5,6 +5,7 @@
 // ROS
 #include <ros/ros.h>
 #include <ros/console.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <urdf/model.h>
 #include <kdl_parser/kdl_parser.hpp>
 #include <hardware_interface/joint_command_interface.h>
@@ -30,12 +31,21 @@ class MotionController : public MotionControllerBase<HardwareInterface> {
   // Node
   ros::NodeHandle node;
 
+  // Subscribed Topics
+  ros::Subscriber target_pose_sub;
+  ros::Subscriber obstacle_pose_sub;
+
   // Hardware Interface
   std::vector<hardware_interface::JointHandle> joint_handles;
 
   void updateState();
 
   void sendCommand();
+
+
+  void targetFrameCallback(const geometry_msgs::PoseStamped &target);
+
+  void obstacleFrameCallback(const geometry_msgs::PoseStamped &target);
 
 public:
 

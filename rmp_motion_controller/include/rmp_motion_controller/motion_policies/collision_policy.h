@@ -48,8 +48,6 @@ private:
 
   Eigen::Vector3d policy(const Eigen::Vector3d &x_pos, const Eigen::Vector3d &x_vel) override
   {
-    std::cout << "obstacle dist: " << dist(x_pos,x_obs) << std::endl;
-    std::cout << "obstacle alpha: " << alpha(dist(x_pos,x_obs)) << std::endl;
     return alpha(dist(x_pos,x_obs)) * v_norm(x_pos,x_obs) - beta(dist(x_pos,x_obs)) * (v_norm(x_pos,x_obs) * v_norm(x_pos,x_obs).transpose()) * x_vel;
   }
 

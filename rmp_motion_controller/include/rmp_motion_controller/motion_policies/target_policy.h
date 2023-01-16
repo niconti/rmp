@@ -46,8 +46,8 @@ public:
     this->x = x;
     this->x_goal = x_goal;
 
-    alpha = 1.0;
-    beta  = 10.0;
+    alpha = 10.0;
+    beta  = 20.0;
   }
 
 

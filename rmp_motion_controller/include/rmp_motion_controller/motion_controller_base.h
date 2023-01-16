@@ -9,6 +9,7 @@
 #include <ros/console.h>
 #include <controller_interface/controller.h>
 #include <hardware_interface/joint_command_interface.h>
+#include <eigen_conversions/eigen_kdl.h>
 // KDL
 #include <kdl/frames.hpp>
 #include <kdl/jntarray.hpp>
@@ -25,6 +26,7 @@
 #include "rmp_motion_controller/motion_policies.h"
 #include "rmp_motion_controller/motion_policies/target_policy.h"
 #include "rmp_motion_controller/motion_policies/collision_policy.h"
+#include "rmp_motion_controller/motion_policies/redundancy_policy.h"
 
 
 namespace rmp {
@@ -33,22 +35,23 @@ template <class HardwareInterface>
 class MotionControllerBase : public controller_interface::Controller<HardwareInterface> {
 protected:
 
-
+  //
   KDL::JntArray current_jpos;
   KDL::JntArray current_jvel;
   KDL::JntArray current_jacc;
+  
+  KDL::Frame current_xpos;
 
   KDL::Tree kdl_tree;
   KDL::Chain kdl_chain;
 
-  KDL::Frame current_xpos;
   std::shared_ptr<KDL::ChainFkSolverPos_recursive> fk_pos_solver;
   std::shared_ptr<KDL::ChainFkSolverVel_recursive> fk_vel_solver;
 
   KDL::Jacobian jacobian;
   std::shared_ptr<KDL::ChainJntToJacSolver> jacobian_solver;
 
-
+  //
   Eigen::VectorXd q_pos;
   Eigen::VectorXd q_vel;
   Eigen::VectorXd q_acc;

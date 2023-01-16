@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Start robot state publisher -->
+  <!--
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <rosparam param="source_list">["/joint_states"]</rosparam>
+  </node>
+  -->
+
+  <!-- RViz -->
+  <node name="rviz" pkg="rviz" type="rviz" required="true"
+        args="-d $(find rmp_motion_visualization)/rviz/rmp.rviz"/>
+
+  <!-- -->
+  <node name="rmp_motion_visualization" pkg="rmp_motion_visualization" type="rmp_motion_visualization_node" output="screen">
+    <remap from="/rmp_motion_visualization/target_pose" to="/rmp_motion_controller/target_pose"/>
+    <remap from="/rmp_motion_visualization/obstacle_pose" to="/rmp_motion_controller/obstacle_pose"/>
+  </node>
+
+</launch>

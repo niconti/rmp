@@ -106,6 +106,10 @@ bool MotionController<HardwareInterface>::init(HardwareInterface* robot_hw, ros:
   Base::jacobian.resize(n_joints);
   Base::jacobian_solver.reset(new KDL::ChainJntToJacSolver(Base::kdl_chain));
 
+
+  target_pose_sub = node.subscribe("target_pose", 3, &MotionController<HardwareInterface>::targetFrameCallback, this);
+  obstacle_pose_sub = node.subscribe("obstacle_pose", 3, &MotionController<HardwareInterface>::obstacleFrameCallback, this);
+
   return true;
 }
 
@@ -119,6 +123,20 @@ void MotionController<HardwareInterface>::starting(const ros::Time &time)
 
     auto x_rmp = std::make_shared<rmp::TargetPolicy>(x_goal,x);
     Base::addXMotionPolicy(x_rmp);
+  }
+  {
+    Eigen::Vector3d x(0.0, 0.0, 0.0);
+    Eigen::Vector3d x_obs(0.5, 0, 0.5);
+
+    auto x_rmp = std::make_shared<rmp::CollisionPolicy>(x_obs,x);
+    Base::addXMotionPolicy(x_rmp);
+  }
+  {
+    Eigen::VectorXd q_goal(7);
+    q_goal << 0.0, -0.8, 0.0, -2.35, 0.0, 1.57, 0.8;
+
+    auto q_rmp = std::make_shared<rmp::RedundancyPolicy>(q_goal);
+    Base::addQMotionPolicy(q_rmp);
   }
 }
 
@@ -136,6 +154,57 @@ void MotionController<HardwareInterface>::update(const ros::Time &time, const ro
   Base::q_pos += Base::q_vel * dt;
 
   sendCommand();
+}
+
+
+template <class HardwareInterface>
+void MotionController<HardwareInterface>::targetFrameCallback(const geometry_msgs::PoseStamped &target)
+{
+  if (target.header.frame_id != base_frame)
+  {
+    std::string frame_id = target.header.frame_id;
+    ROS_WARN_THROTTLE(3, "Target frame_id: '%s' doesn't match base_frame: '%s'. Skip.", frame_id.c_str(), base_frame.c_str());
+    return;
+  }
+
+  double x, y, z;
+  x = target.pose.position.x;
+  y = target.pose.position.y;
+  z = target.pose.position.z;
+
+  Eigen::Vector3d b(0.0, 0.0, 0.0);
+  Eigen::Vector3d x_goal(x, y, z);
+
+  // auto x_rmp = std::make_shared<rmp::TargetPolicy>(x_goal,b);
+
+  auto x_rmp = Base::x_motion_policies[0];
+
+  std::dynamic_pointer_cast<rmp::TargetPolicy>(x_rmp)->setGoal(x_goal);
+}
+
+template <class HardwareInterface>
+void MotionController<HardwareInterface>::obstacleFrameCallback(const geometry_msgs::PoseStamped &obstacle)
+{
+  if (obstacle.header.frame_id != base_frame)
+  {
+    std::string frame_id = obstacle.header.frame_id;
+    ROS_WARN_THROTTLE(3, "Obstacle frame_id: '%s' doesn't match base_frame: '%s'. Skip.", frame_id.c_str(), base_frame.c_str());
+    return;
+  }
+
+  double x, y, z;
+  x = obstacle.pose.position.x;
+  y = obstacle.pose.position.y;
+  z = obstacle.pose.position.z;
+
+  Eigen::Vector3d b(0.0, 0.0, 0.0);
+  Eigen::Vector3d x_obs(x, y, z);
+
+  // auto x_rmp = std::make_shared<rmp::CollisionPolicy>(x_obs,b);
+
+  auto x_rmp = Base::x_motion_policies[1];
+
+  std::dynamic_pointer_cast<rmp::CollisionPolicy>(x_rmp)->setObstacle(x_obs);
 }
 
 
