@@ -67,25 +67,33 @@ public:
 
     alpha = [](double value)
     {
-      double n = 10.0;
-      double v = 0.1;
+      double n = 400.0;
+      double v = 0.02;
       return n * std::exp(-value / v);
     };
 
     beta = [](double value)
     {
-      double n = 10.0;
-      double v = 0.1;
+      double n = 20.0;
+      double v = 0.2;
       return n / (value / v);
     };
 
+    // weight = [](double value)
+    // {
+    //   double r = 10.0;
+    //   double c2, c1, c0;
+    //   c2 =  1.0 / (r * r);
+    //   c1 = -2.0 / r;
+    //   c0 =  1.0;
+    //   return c2 * value * value + c1 * value + c0;
+    // };
+
     weight = [](double value)
     {
-      double r  = 1.0;
-      double c2 = 1.0 / (r * r);
-      double c1 = -2.0 / r;
-      double c0 = 1.0;
-      return c2 * value * value + c1 * value + c0;
+      double r = 1.0;
+      double v = std::fmax(0, r - value);
+      return v * v / value;
     };
   }
 

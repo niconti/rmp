@@ -124,6 +124,7 @@ void MotionController<HardwareInterface>::starting(const ros::Time &time)
     auto x_rmp = std::make_shared<rmp::TargetPolicy>(x_goal,x);
     Base::addXMotionPolicy(x_rmp);
   }
+
   {
     Eigen::Vector3d x(0.0, 0.0, 0.0);
     Eigen::Vector3d x_obs(0.5, 0, 0.5);
@@ -131,6 +132,7 @@ void MotionController<HardwareInterface>::starting(const ros::Time &time)
     auto x_rmp = std::make_shared<rmp::CollisionPolicy>(x_obs,x);
     Base::addXMotionPolicy(x_rmp);
   }
+
   {
     Eigen::VectorXd q_goal(7);
     q_goal << 0.0, -0.8, 0.0, -2.35, 0.0, 1.57, 0.8;
