@@ -11,22 +11,15 @@
 #include <hardware_interface/joint_command_interface.h>
 #include <eigen_conversions/eigen_kdl.h>
 // KDL
-#include <kdl/frames.hpp>
 #include <kdl/jntarray.hpp>
 #include <kdl/tree.hpp>
 #include <kdl/chain.hpp>
-#include <kdl/jacobian.hpp>
-#include <kdl/chainfksolverpos_recursive.hpp>
-#include <kdl/chainfksolvervel_recursive.hpp>
-#include <kdl/chainjnttojacsolver.hpp>
 // Eigen
 #include <Eigen/Dense>
 //
-#include "rmp_motion_controller/math.h"
-#include "rmp_motion_controller/motion_policies.h"
-#include "rmp_motion_controller/motion_policies/target_policy.h"
-#include "rmp_motion_controller/motion_policies/collision_policy.h"
-#include "rmp_motion_controller/motion_policies/redundancy_policy.h"
+#include "rmp_motion_controller/robot_policies/joint_policy.h"
+#include "rmp_motion_controller/robot_policies/link_policy.h"
+#include "rmp_motion_controller/robot_policies/eef_policy.h"
 
 
 namespace rmp {
@@ -40,35 +33,63 @@ protected:
   KDL::JntArray current_jvel;
   KDL::JntArray current_jacc;
   
-  KDL::Frame current_xpos;
-
   KDL::Tree kdl_tree;
   KDL::Chain kdl_chain;
-
-  std::shared_ptr<KDL::ChainFkSolverPos_recursive> fk_pos_solver;
-  std::shared_ptr<KDL::ChainFkSolverVel_recursive> fk_vel_solver;
-
-  KDL::Jacobian jacobian;
-  std::shared_ptr<KDL::ChainJntToJacSolver> jacobian_solver;
 
   //
   Eigen::VectorXd q_pos;
   Eigen::VectorXd q_vel;
   Eigen::VectorXd q_acc;
 
-  std::vector<std::shared_ptr<XMotionPolicy>> x_motion_policies;
-  std::vector<std::shared_ptr<QMotionPolicy>> q_motion_policies;
+  std::shared_ptr<JointPolicy> joint_policy;
+  std::vector<std::shared_ptr<LinkPolicy>> link_policies;
+  std::shared_ptr<EndEffectorPolicy> eef_policy;
 
-  MotionPolicy pullback(const XMotionPolicy &x_rmp, const Eigen::MatrixXd &J);
-  MotionPolicy pushforward(const QMotionPolicy &q_rmp, const Eigen::MatrixXd &J);
 
-  void addXMotionPolicy(const std::shared_ptr<rmp::XMotionPolicy> &rmp);
-  void addQMotionPolicy(const std::shared_ptr<rmp::QMotionPolicy> &rmp);
+  void computeMotionPolicies()
+  {
+    KDL::JntArray jvel;
+    jvel.resize(7);
+    for (int i=0; i < q_vel.size(); i++)
+    {
+      jvel(i) = q_vel(i);
+    }
+    computeMotionPolicies(current_jpos, jvel);
+  }
 
-  void clearXMotionPolicies();
-  void clearQMotionPolicies();
+private:
 
-  void computeMotionPolicies();
+  void computeMotionPolicies(const KDL::JntArray &jpos, const KDL::JntArray &jvel)
+  {
+    /*
+     * 2) The RMPs are pulled back into the confguration space; */
+
+    /*
+     * 3) The pulled back RMPs are summed; */
+
+    const int n = kdl_chain.getNrOfJoints();
+
+    MotionPolicy q_sum;
+    q_sum.f = Eigen::VectorXd::Zero(n);
+    q_sum.A = Eigen::MatrixXd::Identity(n,n);
+
+    for (const auto &link_policy : link_policies)
+    {
+      q_sum = q_sum + link_policy->computeMotionPolicy(jpos, jvel);
+    }
+    {
+      q_sum = q_sum + eef_policy->computeMotionPolicy(jpos, jvel);
+    }
+    {
+      q_sum = q_sum + joint_policy->computeMotionPolicy(jpos, jvel);
+    }
+
+    /*
+     * 4) The combined RMP is itself pulled back into an unconstrained space to
+     *    handle joint limits. */
+
+    q_acc = q_sum.f;
+  }
 
 };
 

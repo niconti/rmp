@@ -16,9 +16,10 @@ private:
 
   Eigen::Vector3d x_obs;
 
-  std::function<double(double)> alpha;
-  std::function<double(double)> beta;
-  std::function<double(double)> weight;
+  std::function<double(double)> w;
+  std::function<double(double)> u;
+  std::function<double(double)> dw;
+  std::function<double(double)> du;
 
 
   Eigen::Vector3d v(const Eigen::Vector3d &x_pos, const Eigen::Vector3d &x_obs)
@@ -38,7 +39,7 @@ private:
 
   Eigen::Vector3d soft_norm(const Eigen::Vector3d &v)
   {
-    double c = 10.0;
+    double c = 100.0;
 
     auto h = [&](double z) { return z + (1.0 / c) * std::log(1 + std::exp(-2.0 * c * z)); };
 
@@ -48,14 +49,28 @@ private:
 
   Eigen::Vector3d policy(const Eigen::Vector3d &x_pos, const Eigen::Vector3d &x_vel) override
   {
-    return alpha(dist(x_pos,x_obs)) * v_norm(x_pos,x_obs) - beta(dist(x_pos,x_obs)) * (v_norm(x_pos,x_obs) * v_norm(x_pos,x_obs).transpose()) * x_vel;
+    // return alpha(dist(x_pos,x_obs)) * v_norm(x_pos,x_obs) - beta(dist(x_pos,x_obs)) * (v_norm(x_pos,x_obs) * v_norm(x_pos,x_obs).transpose()) * x_vel;
+
+    auto n = v_norm(x_pos,x_obs);
+
+    double s_pos = dist(x_pos,x_obs);
+    double s_vel = n.transpose() * x_vel;
+
+    double alpha = 10e-6;
+    return (-alpha * w(s_pos) * dw(s_pos) - 0.5 * std::pow(s_vel,2) * u(s_vel) * dw(s_pos)) * v_norm(x_pos,x_obs);
   }
 
 
   Eigen::Matrix3d metric(const Eigen::Vector3d &x_pos, const Eigen::Vector3d &x_vel) override
   {
     Eigen::Vector3d x_acc = policy(x_pos,x_vel);
-    return weight(dist(x_pos,x_obs)) * soft_norm(x_acc) * soft_norm(x_acc).transpose();
+    
+    auto n = v_norm(x_pos,x_obs);
+    
+    double s_pos = dist(x_pos,x_obs);
+    double s_vel = n.transpose() * x_vel;
+
+    return (w(s_pos) * u(s_vel) + 0.5 * s_vel * w(s_pos) * du(s_vel)) * soft_norm(x_acc) * soft_norm(x_acc).transpose();
   }
 
 public:
@@ -65,36 +80,57 @@ public:
     this->x = x;
     this->x_obs = x_obs;
 
-    alpha = [](double value)
+    w = [](double value)
     {
-      double n = 400.0;
-      double v = 0.02;
-      return n * std::exp(-value / v);
+      // double r = 1.0;
+      // double v = std::fmax(0, r - value);
+      // return v * v / value;
+      return 1.0 / std::pow(value,4);
     };
 
-    beta = [](double value)
+    dw = [](double value)
     {
-      double n = 20.0;
-      double v = 0.2;
-      return n / (value / v);
+      return -4.0 / std::pow(value,5);
     };
 
-    // weight = [](double value)
+    u = [](double value)
+    {
+      // if (value < 0)
+      // {
+      //   double sigma = 1.0;
+      //   return 1 - std::exp(-(value * value) / 2.0 * std::pow(sigma,2));
+      // }
+      // else
+      // {
+      //   return 0.;
+      // }
+      return 10e-9 + std::fmin(0, value) * value;
+    };
+
+    du = [](double value)
+    {
+      // if (value < 0)
+      // {
+      //   double sigma = 1.0;
+      //   return -(value / std::pow(sigma,2)) * std::exp(-(value * value) / 2.0 * std::pow(sigma,2));
+      // }
+      // else
+      // {
+      //   return 0.;
+      // }
+      return 2.0 * std::fmin(0, value);
+    };
+
+    // auto g = [&w,&u](double pos, double vel)
     // {
-    //   double r = 10.0;
-    //   double c2, c1, c0;
-    //   c2 =  1.0 / (r * r);
-    //   c1 = -2.0 / r;
-    //   c0 =  1.0;
-    //   return c2 * value * value + c1 * value + c0;
+    //   return w(pos) * u(vel);
     // };
 
-    weight = [](double value)
-    {
-      double r = 1.0;
-      double v = std::fmax(0, r - value);
-      return v * v / value;
-    };
+    // auto m = [&w,&u,&du](double pos, double vel)
+    // {
+    //   return w(pos) * u(vel) + 0.5 * w(pos) * vel * du(vel);
+    // };
+
   }
 
 
