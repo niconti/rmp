@@ -5,8 +5,8 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /InteractiveMarkers1
-        - /InteractiveMarkers1/Status1
+        - /RobotModel1
+        - /RobotModel1/Links1
       Splitter Ratio: 0.5
     Tree Height: 685
   - Class: rviz/Selection
@@ -50,7 +50,22 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
-    - Alpha: 1
+    - Class: rviz/TF
+      Enabled: false
+      Frame Timeout: 15
+      Frames:
+        All Enabled: true
+      Marker Alpha: 1
+      Marker Scale: 0.5
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        {}
+      Update Interval: 0
+      Value: false
+    - Alpha: 0.5
       Class: rviz/RobotModel
       Collision Enabled: false
       Enabled: true
@@ -89,7 +104,7 @@ Visualization Manager:
           Show Trail: false
         panda_link1:
           Alpha: 1
-          Show Axes: false
+          Show Axes: true
           Show Trail: false
           Value: true
         panda_link1_sc:
@@ -98,7 +113,7 @@ Visualization Manager:
           Show Trail: false
         panda_link2:
           Alpha: 1
-          Show Axes: false
+          Show Axes: true
           Show Trail: false
           Value: true
         panda_link2_sc:
@@ -107,7 +122,7 @@ Visualization Manager:
           Show Trail: false
         panda_link3:
           Alpha: 1
-          Show Axes: false
+          Show Axes: true
           Show Trail: false
           Value: true
         panda_link3_sc:
@@ -116,7 +131,7 @@ Visualization Manager:
           Show Trail: false
         panda_link4:
           Alpha: 1
-          Show Axes: false
+          Show Axes: true
           Show Trail: false
           Value: true
         panda_link4_sc:
@@ -125,7 +140,7 @@ Visualization Manager:
           Show Trail: false
         panda_link5:
           Alpha: 1
-          Show Axes: false
+          Show Axes: true
           Show Trail: false
           Value: true
         panda_link5_sc:
@@ -134,7 +149,7 @@ Visualization Manager:
           Show Trail: false
         panda_link6:
           Alpha: 1
-          Show Axes: false
+          Show Axes: true
           Show Trail: false
           Value: true
         panda_link6_sc:
@@ -143,7 +158,7 @@ Visualization Manager:
           Show Trail: false
         panda_link7:
           Alpha: 1
-          Show Axes: false
+          Show Axes: true
           Show Trail: false
           Value: true
         panda_link7_sc:
@@ -152,7 +167,7 @@ Visualization Manager:
           Show Trail: false
         panda_link8:
           Alpha: 1
-          Show Axes: false
+          Show Axes: true
           Show Trail: false
         panda_rightfinger:
           Alpha: 1
@@ -199,7 +214,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 3.493516206741333
+      Distance: 1.5914790630340576
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -207,17 +222,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.09527137875556946
-        Y: 0.4347044825553894
-        Z: 0.35176825523376465
+        X: 0.25049063563346863
+        Y: -0.16857276856899261
+        Z: 0.3927171230316162
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.2903984785079956
+      Pitch: 0.1047971248626709
       Target Frame: <Fixed Frame>
-      Yaw: 5.498580455780029
+      Yaw: 1.545393466949463
     Saved: ~
 Window Geometry:
   Displays:
@@ -235,5 +250,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1848
-  X: 1992
+  X: 72
   Y: 27

@@ -5,8 +5,8 @@ namespace rmp {
 
 
 template <class HardwareInterface>
-void MotionController<HardwareInterface>::updateState() {
-
+void MotionController<HardwareInterface>::updateState() 
+{
   for (int i = 0; i < joint_handles.size(); i++)
   {
     Base::current_jpos(i) = joint_handles[i].getPosition();
@@ -16,8 +16,8 @@ void MotionController<HardwareInterface>::updateState() {
 }
 
 template <class HardwareInterface>
-void MotionController<HardwareInterface>::sendCommand() {
-
+void MotionController<HardwareInterface>::sendCommand() 
+{
   for (int i = 0; i < joint_handles.size(); i++)
   {
     joint_handles[i].setCommand(Base::q_pos[i]);
@@ -26,27 +26,27 @@ void MotionController<HardwareInterface>::sendCommand() {
 
 
 template <class HardwareInterface>
-bool MotionController<HardwareInterface>::init(HardwareInterface* robot_hw, ros::NodeHandle &node) {
-
+bool MotionController<HardwareInterface>::init(HardwareInterface* robot_hw, ros::NodeHandle &node) 
+{
   std::string robot_description;
   if (!node.getParam(ROBOT_DESCRIPTION, robot_description))
   {
     std::string param_name = node.resolveName(ROBOT_DESCRIPTION);
-    ROS_ERROR("Failed to retrive '%s' from parameter server.", param_name.c_str());
+    ROS_ERROR_NAMED(LOGNAME, "Failed to retrive '%s' from parameter server.", param_name.c_str());
     return false;
   }
 
   if (!node.getParam("base_frame", base_frame))
   {
     std::string param_name = node.resolveName("base_frame");
-    ROS_ERROR("Failed to retrive '%s' from parameter server.", param_name.c_str());
+    ROS_ERROR_NAMED(LOGNAME, "Failed to retrive '%s' from parameter server.", param_name.c_str());
     return false;
   }
 
   if (!node.getParam("eef_frame", eef_frame))
   {
     std::string param_name = node.resolveName("eef_frame");
-    ROS_ERROR("Failed to retrive '%s' from parameter server.", param_name.c_str());
+    ROS_ERROR_NAMED(LOGNAME, "Failed to retrive '%s' from parameter server.", param_name.c_str());
     return false;
   }
 
@@ -54,27 +54,29 @@ bool MotionController<HardwareInterface>::init(HardwareInterface* robot_hw, ros:
   if (!urdf_model.initString(robot_description))
   {
     std::string param_name = node.resolveName(ROBOT_DESCRIPTION);
-    ROS_ERROR("Failed to parse urdf model from '%s'", param_name.c_str());
+    ROS_ERROR_NAMED(LOGNAME"Failed to parse URDF Model from '%s'", param_name.c_str());
     return false;
   }
 
   if (!kdl_parser::treeFromUrdfModel(urdf_model, Base::kdl_tree))
   {
-    ROS_ERROR("Failed to parse URDL Model");
+    ROS_ERROR_NAMED(LOGNAME, "Failed to parse URDF Model");
     return false;
   }
 
   if (!Base::kdl_tree.getChain(base_frame, eef_frame, Base::kdl_chain))
   {
-    ROS_ERROR("Failed to get kinematics chain from '%s' to '%s'", base_frame.c_str(), eef_frame.c_str());
+    ROS_ERROR_NAMED(LOGNAME, "Failed to get kinematics chain from '%s' to '%s'", base_frame.c_str(), eef_frame.c_str());
     return false;
   }
 
+  ROS_INFO_NAMED(LOGNAME, "Number of Joints: %d", Base::kdl_chain.getNrOfJoints());
+  ROS_INFO_NAMED(LOGNAME, "Number of Segments: %d", Base::kdl_chain.getNrOfSegments());
 
   if (!node.getParam("joints", joint_names))
   {
     std::string param_name = node.resolveName("joints");
-    ROS_ERROR("Failed to retrive '%s' from parameter server.", param_name.c_str());
+    ROS_ERROR_NAMED(LOGNAME, "Failed to retrive '%s' from parameter server.", param_name.c_str());
     return false;
   }
 
@@ -96,16 +98,10 @@ bool MotionController<HardwareInterface>::init(HardwareInterface* robot_hw, ros:
     }
   }
 
+
   Base::current_jpos.resize(n_joints);
   Base::current_jvel.resize(n_joints);
   Base::current_jacc.resize(n_joints);
-
-  Base::fk_pos_solver.reset(new KDL::ChainFkSolverPos_recursive(Base::kdl_chain));
-  Base::fk_vel_solver.reset(new KDL::ChainFkSolverVel_recursive(Base::kdl_chain));
-
-  Base::jacobian.resize(n_joints);
-  Base::jacobian_solver.reset(new KDL::ChainJntToJacSolver(Base::kdl_chain));
-
 
   target_pose_sub = node.subscribe("target_pose", 3, &MotionController<HardwareInterface>::targetFrameCallback, this);
   obstacle_pose_sub = node.subscribe("obstacle_pose", 3, &MotionController<HardwareInterface>::obstacleFrameCallback, this);
@@ -117,29 +113,50 @@ bool MotionController<HardwareInterface>::init(HardwareInterface* robot_hw, ros:
 template <class HardwareInterface>
 void MotionController<HardwareInterface>::starting(const ros::Time &time)
 {
+  for (int i=0; i < Base::kdl_chain.getNrOfSegments(); i++)
   {
-    Eigen::Vector3d x(0.0, 0.0, 0.0);
-    Eigen::Vector3d x_goal(0.5, 0, 0.5);
-
-    auto x_rmp = std::make_shared<rmp::TargetPolicy>(x_goal,x);
-    Base::addXMotionPolicy(x_rmp);
+    std::string link_name = Base::kdl_chain.getSegment(i).getName();
+    std::cout << "Link name: " << link_name << std::endl;
   }
-
+  for (int i=1; i < Base::kdl_chain.getNrOfSegments(); i++)
   {
     Eigen::Vector3d x(0.0, 0.0, 0.0);
     Eigen::Vector3d x_obs(0.5, 0, 0.5);
 
-    auto x_rmp = std::make_shared<rmp::CollisionPolicy>(x_obs,x);
-    Base::addXMotionPolicy(x_rmp);
+    auto link_policy = std::make_shared<rmp::LinkPolicy>(Base::kdl_chain,i);
+    link_policy->addObstacle(x_obs);
+    
+    Base::link_policies.push_back(link_policy);
+  }
+
+  {
+    Eigen::Vector3d x(0.0, 0.0, 0.0);
+    Eigen::Vector3d x_goal(0.5, 0, 0.5);
+    Eigen::Vector3d x_obs(0.5, 0, 0.5);
+
+    auto eef_policy = std::make_shared<rmp::EndEffectorPolicy>(Base::kdl_chain);
+    eef_policy->addTarget(x_goal);    
+    eef_policy->addObstacle(x_obs);
+
+    Base::eef_policy = eef_policy;
   }
 
   {
     Eigen::VectorXd q_goal(7);
     q_goal << 0.0, -0.8, 0.0, -2.35, 0.0, 1.57, 0.8;
 
-    auto q_rmp = std::make_shared<rmp::RedundancyPolicy>(q_goal);
-    Base::addQMotionPolicy(q_rmp);
+    auto joint_policy = std::make_shared<rmp::JointPolicy>(Base::kdl_chain);
+    joint_policy->addTarget(q_goal);
+
+    Base::joint_policy = joint_policy;
   }
+
+
+  updateState();
+  Base::q_pos = Base::current_jpos.data;
+  Base::q_vel = Base::current_jvel.data;
+  Base::q_acc = Base::current_jacc.data;
+  sendCommand();
 }
 
 
@@ -177,11 +194,7 @@ void MotionController<HardwareInterface>::targetFrameCallback(const geometry_msg
   Eigen::Vector3d b(0.0, 0.0, 0.0);
   Eigen::Vector3d x_goal(x, y, z);
 
-  // auto x_rmp = std::make_shared<rmp::TargetPolicy>(x_goal,b);
-
-  auto x_rmp = Base::x_motion_policies[0];
-
-  std::dynamic_pointer_cast<rmp::TargetPolicy>(x_rmp)->setGoal(x_goal);
+  Base::eef_policy->setTarget(x_goal);
 }
 
 template <class HardwareInterface>
@@ -202,11 +215,10 @@ void MotionController<HardwareInterface>::obstacleFrameCallback(const geometry_m
   Eigen::Vector3d b(0.0, 0.0, 0.0);
   Eigen::Vector3d x_obs(x, y, z);
 
-  // auto x_rmp = std::make_shared<rmp::CollisionPolicy>(x_obs,b);
-
-  auto x_rmp = Base::x_motion_policies[1];
-
-  std::dynamic_pointer_cast<rmp::CollisionPolicy>(x_rmp)->setObstacle(x_obs);
+  for (const auto &policy : Base::link_policies)
+  {
+    policy->setObstacle(x_obs);
+  }
 }
 
 

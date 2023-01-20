@@ -22,6 +22,7 @@ class MotionController : public MotionControllerBase<HardwareInterface> {
 
   typedef MotionControllerBase<HardwareInterface> Base;
 
+  const std::string LOGNAME = "MotionController";
   const std::string ROBOT_DESCRIPTION = "/robot_description";
 
   std::vector<std::string> joint_names;
