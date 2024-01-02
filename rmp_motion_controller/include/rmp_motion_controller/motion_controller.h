@@ -11,6 +11,9 @@
 #include <hardware_interface/joint_command_interface.h>
 #include <pluginlib/class_list_macros.h>
 //
+#include <Eigen/Dense>
+#include <Eigen/Geometry>
+//
 #include "rmp_motion_controller/motion_controller_base.h"
 
 

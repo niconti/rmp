@@ -4,7 +4,7 @@
 
   <!-- -->
   <include file="$(find franka_gazebo)/launch/panda.launch">
-    <arg name="controller" value="cartesian_impedance_example_controller"/>
+    <arg name="controller" value="rmp_motion_controller"/>
     <arg name="rviz" value="$(arg rviz)"/>
   </include>
 
