@@ -54,7 +54,7 @@ bool MotionController<HardwareInterface>::init(HardwareInterface* robot_hw, ros:
   if (!urdf_model.initString(robot_description))
   {
     std::string param_name = node.resolveName(ROBOT_DESCRIPTION);
-    ROS_ERROR_NAMED(LOGNAME"Failed to parse URDF Model from '%s'", param_name.c_str());
+    ROS_ERROR_NAMED(LOGNAME, "Failed to parse URDF Model from '%s'", param_name.c_str());
     return false;
   }
 
@@ -130,12 +130,14 @@ void MotionController<HardwareInterface>::starting(const ros::Time &time)
   }
 
   {
-    Eigen::Vector3d x(0.0, 0.0, 0.0);
-    Eigen::Vector3d x_goal(0.5, 0, 0.5);
-    Eigen::Vector3d x_obs(0.5, 0, 0.5);
+    Eigen::Translation3d o_goal(0.5, 0, 0.5);
+    Eigen::Quaterniond R_goal(0, 1, 0, 0);
+    Eigen::Isometry3d X_goal = o_goal * R_goal;
 
     auto eef_policy = std::make_shared<rmp::EndEffectorPolicy>(Base::kdl_chain);
-    eef_policy->addTarget(x_goal);    
+    eef_policy->addTarget(X_goal);    
+    
+    Eigen::Vector3d x_obs(0.5, 0, 0.5);
     eef_policy->addObstacle(x_obs);
 
     Base::eef_policy = eef_policy;
@@ -190,11 +192,17 @@ void MotionController<HardwareInterface>::targetFrameCallback(const geometry_msg
   x = target.pose.position.x;
   y = target.pose.position.y;
   z = target.pose.position.z;
+  Eigen::Translation3d o_goal(x, y, z);
 
-  Eigen::Vector3d b(0.0, 0.0, 0.0);
-  Eigen::Vector3d x_goal(x, y, z);
+  double qx, qy, qz, qw;
+  qx = target.pose.orientation.x;
+  qy = target.pose.orientation.y;
+  qz = target.pose.orientation.z;
+  qw = target.pose.orientation.w;
+  Eigen::Quaterniond R_goal(qw, qx, qy, qz);
 
-  Base::eef_policy->setTarget(x_goal);
+  Eigen::Isometry3d X_goal = o_goal * R_goal;
+  Base::eef_policy->setTarget(X_goal);
 }
 
 template <class HardwareInterface>
