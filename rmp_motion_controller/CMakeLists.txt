@@ -55,7 +55,7 @@ find_package(orocos_kdl REQUIRED)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES riemmanian_motion_policies
+#  LIBRARIES riemannian_motion_policies
   CATKIN_DEPENDS
     roscpp
     geometry_msgs

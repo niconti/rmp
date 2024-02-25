@@ -71,7 +71,7 @@ bool MotionController<HardwareInterface>::init(HardwareInterface* robot_hw, ros:
   }
 
 
-  if (!node.getParam("joints", joint_names))
+  if (!node.getParam("joint_names", joint_names))
   {
     std::string param_name = node.resolveName("joints");
     ROS_ERROR("Failed to retrive '%s' from parameter server.", param_name.c_str());
