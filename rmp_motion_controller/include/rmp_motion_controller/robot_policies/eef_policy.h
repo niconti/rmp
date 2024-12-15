@@ -72,7 +72,7 @@ public:
   }
 
 
-  MotionPolicy computeMotionPolicy(const KDL::JntArray &jpos, const KDL::JntArray &jvel)
+  MotionPolicy computeMotionPolicy(const KDL::JntArray &jpos, const KDL::JntArray &jvel) override
   {
     KDL::Frame xpos;
     fk_pos_solver->JntToCart(jpos, xpos);

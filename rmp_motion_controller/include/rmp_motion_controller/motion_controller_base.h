@@ -10,6 +10,7 @@
 #include <controller_interface/controller.h>
 #include <hardware_interface/joint_command_interface.h>
 #include <eigen_conversions/eigen_kdl.h>
+#include <XmlRpcValue.h>
 // KDL
 #include <kdl/jntarray.hpp>
 #include <kdl/tree.hpp>
@@ -45,6 +46,10 @@ protected:
   std::vector<std::shared_ptr<LinkPolicy>> link_policies;
   std::shared_ptr<EndEffectorPolicy> eef_policy;
 
+  void configMotionPolicies()
+  {
+    
+  }
 
   void computeMotionPolicies()
   {
@@ -58,6 +63,18 @@ protected:
   }
 
 private:
+
+  void configMotionPolicies(const XmlRpc::XmlRpcValue &config)
+  {
+    for (const auto &param : config)
+    {
+      if (param.first == "redundancy_policy")
+      {
+        auto policy = std::make_shared<rmp::RedundancyPolicy>(kdl_chain);
+        policy->setConfig(param.second);
+      }
+    }
+  }
 
   void computeMotionPolicies(const KDL::JntArray &jpos, const KDL::JntArray &jvel)
   {

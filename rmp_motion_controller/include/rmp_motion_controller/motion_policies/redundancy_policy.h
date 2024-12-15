@@ -1,10 +1,11 @@
 #ifndef RMP_MOTION_CONTROLLER_MOTION_POLICIES_REDUNDANCY_POLICY_H
 #define RMP_MOTION_CONTROLLER_MOTION_POLICIES_REDUNDANCY_POLICY_H
 #include "rmp_motion_controller/motion_policies.h"
-// STL
 #include <cmath>
 // Eigen
 #include <Eigen/Dense>
+// XML-RPC
+#include <XmlRpcValue.h>
 
 
 namespace rmp {
@@ -15,18 +16,23 @@ private:
 
   Eigen::VectorXd q_goal;
 
-  double alpha;
-  double beta;
+  double nu;      // Priority weight relative to other RMPs
+  double kp;      // Position gain, determining how strongly configuration is pulled toward target
+  double kd;      // Damping gain, determining amount of “drag”
+  double theta;   // Distance in c-space at which the position correction vector is capped
+
+  std::function<Eigen::VectorXd(const Eigen::VectorXd&)> r;
 
 
   Eigen::VectorXd policy(const Eigen::VectorXd &q_pos, const Eigen::VectorXd &q_vel) override
   {
-    return alpha * (q_goal-q_pos) - beta * q_vel;
+    return kp * r(q_goal-q_pos) - kd * q_vel;
   }
 
   Eigen::MatrixXd metric(const Eigen::VectorXd &q_pos, const Eigen::VectorXd &q_vel) override
   {
-    return Eigen::MatrixXd::Identity(q_pos.size(),q_pos.size());
+    Eigen::MatrixXd I = Eigen::MatrixXd::Identity(q_pos.size(),q_pos.size());
+    return nu * I;
   }
 
 public:
@@ -36,12 +42,33 @@ public:
     this->q = q;
     this->q_goal = q_goal;
 
-    alpha = 1.0;
-    beta  = 2.0;
+    kp = 1.0;
+    kd = 2.0;
+    nu = 1.0;
+    theta = 1.0;
+
+    r = [=](const Eigen::VectorXd &p)
+    {
+      Eigen::VectorXd result;
+      if (p.norm() < theta)
+        result = p;
+      else
+        result = theta * p / p.norm();
+      return result;
+    };
   }
 
 
-  void setGoal(const Eigen::Vector3d &q_goal)
+  void setConfig(const XmlRpc::XmlRpcValue &param)
+  {
+    nu = param["nu"];
+    kp = param["kp"];
+    kd = param["kd"];
+    theta = param["theta"];
+  }
+
+
+  void setGoal(const Eigen::VectorXd &q_goal)
   {
     this->q_goal = q_goal;
   }

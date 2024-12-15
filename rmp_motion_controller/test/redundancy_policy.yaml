@@ -1,0 +1,5 @@
+redundancy_policy:
+  nu: 1.0           # Priority weight relative to other RMPs.
+  kp: 1.0           # Position gain, determining how strongly configuration is pulled toward target.
+  kd: 2.0           # Damping gain, determining amount of "drag".
+  theta: 1.0        # Distance in c-space which the position correction vector is capped.

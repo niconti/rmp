@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="rviz" default="false"/>
+
+  <!-- Gazebo -->
+  <include file="$(find franka_gazebo)/launch/panda.launch">
+    <arg name="controller" value="rmp_motion_controller"/>
+    <arg name="rviz" value="$(arg rviz)"/>
+  </include>
+
+  <rosparam file="$(dirname)/redundancy_policy.yaml"/>
+
+  <!-- Test -->
+  <test test-name="redundancy_policy_test" pkg="rmp_motion_controller" type="redundancy_policy_test"/>
+
+</launch>

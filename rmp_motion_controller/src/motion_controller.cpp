@@ -1,10 +1,10 @@
-# include "rmp_motion_controller/motion_controller.h"
+#include "rmp_motion_controller/motion_controller.h"
 
 
 namespace rmp {
 
 
-template <class HardwareInterface>
+template<class HardwareInterface>
 void MotionController<HardwareInterface>::updateState() 
 {
   for (int i = 0; i < joint_handles.size(); i++)
@@ -15,7 +15,7 @@ void MotionController<HardwareInterface>::updateState()
   }
 }
 
-template <class HardwareInterface>
+template<class HardwareInterface>
 void MotionController<HardwareInterface>::sendCommand() 
 {
   for (int i = 0; i < joint_handles.size(); i++)
@@ -25,7 +25,7 @@ void MotionController<HardwareInterface>::sendCommand()
 }
 
 
-template <class HardwareInterface>
+template<class HardwareInterface>
 bool MotionController<HardwareInterface>::init(HardwareInterface* robot_hw, ros::NodeHandle &node) 
 {
   std::string robot_description;
@@ -110,7 +110,7 @@ bool MotionController<HardwareInterface>::init(HardwareInterface* robot_hw, ros:
 }
 
 
-template <class HardwareInterface>
+template<class HardwareInterface>
 void MotionController<HardwareInterface>::starting(const ros::Time &time)
 {
   for (int i=0; i < Base::kdl_chain.getNrOfSegments(); i++)
@@ -118,34 +118,34 @@ void MotionController<HardwareInterface>::starting(const ros::Time &time)
     std::string link_name = Base::kdl_chain.getSegment(i).getName();
     std::cout << "Link name: " << link_name << std::endl;
   }
-  for (int i=1; i < Base::kdl_chain.getNrOfSegments(); i++)
-  {
-    Eigen::Vector3d x(0.0, 0.0, 0.0);
-    Eigen::Vector3d x_obs(0.5, 0, 0.5);
+  // for (int i=1; i < Base::kdl_chain.getNrOfSegments(); i++)
+  // {
+  //   Eigen::Vector3d x(0.0, 0.0, 0.0);
+  //   Eigen::Vector3d x_obs(0.5, 0, 0.5);
 
-    auto link_policy = std::make_shared<rmp::LinkPolicy>(Base::kdl_chain,i);
-    link_policy->addObstacle(x_obs);
+  //   auto link_policy = std::make_shared<rmp::LinkPolicy>(Base::kdl_chain,i);
+  //   link_policy->addObstacle(x_obs);
     
-    Base::link_policies.push_back(link_policy);
-  }
+  //   Base::link_policies.push_back(link_policy);
+  // }
 
-  {
-    Eigen::Translation3d o_goal(0.5, 0, 0.5);
-    Eigen::Quaterniond R_goal(0, 1, 0, 0);
-    Eigen::Isometry3d X_goal = o_goal * R_goal;
+  // {
+  //   Eigen::Translation3d o_goal(0.5, 0.5, 0.5);
+  //   Eigen::Quaterniond R_goal(0, 1, 0, 0);
+  //   Eigen::Isometry3d X_goal = o_goal * R_goal;
 
-    auto eef_policy = std::make_shared<rmp::EndEffectorPolicy>(Base::kdl_chain);
-    eef_policy->addTarget(X_goal);    
+  //   auto eef_policy = std::make_shared<rmp::EndEffectorPolicy>(Base::kdl_chain);
+  //   eef_policy->addTarget(X_goal);    
     
-    Eigen::Vector3d x_obs(0.5, 0, 0.5);
-    eef_policy->addObstacle(x_obs);
+  //   Eigen::Vector3d x_obs(0.5, 0, 0.5);
+  //   eef_policy->addObstacle(x_obs);
 
-    Base::eef_policy = eef_policy;
-  }
+  //   Base::eef_policy = eef_policy;
+  // }
 
   {
     Eigen::VectorXd q_goal(7);
-    q_goal << 0.0, -0.8, 0.0, -2.35, 0.0, 1.57, 0.8;
+    q_goal << 0.00, -0.80, 0.00, -2.35, 0.00, 1.57, 0.80;
 
     auto joint_policy = std::make_shared<rmp::JointPolicy>(Base::kdl_chain);
     joint_policy->addTarget(q_goal);
@@ -162,7 +162,7 @@ void MotionController<HardwareInterface>::starting(const ros::Time &time)
 }
 
 
-template <class HardwareInterface>
+template<class HardwareInterface>
 void MotionController<HardwareInterface>::update(const ros::Time &time, const ros::Duration &period)
 {
   updateState();
@@ -178,7 +178,7 @@ void MotionController<HardwareInterface>::update(const ros::Time &time, const ro
 }
 
 
-template <class HardwareInterface>
+template<class HardwareInterface>
 void MotionController<HardwareInterface>::targetFrameCallback(const geometry_msgs::PoseStamped &target)
 {
   if (target.header.frame_id != base_frame)
@@ -205,7 +205,7 @@ void MotionController<HardwareInterface>::targetFrameCallback(const geometry_msg
   Base::eef_policy->setTarget(X_goal);
 }
 
-template <class HardwareInterface>
+template<class HardwareInterface>
 void MotionController<HardwareInterface>::obstacleFrameCallback(const geometry_msgs::PoseStamped &obstacle)
 {
   if (obstacle.header.frame_id != base_frame)

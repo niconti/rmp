@@ -25,7 +25,10 @@ protected:
 
 public:
 
-  JointPolicy(const KDL::Chain &kdl_chain) : RobotPolicy(kdl_chain) { }
+  JointPolicy(const KDL::Chain &kdl_chain) : RobotPolicy(kdl_chain) 
+  { 
+
+  }
 
 
   void addTarget(const Eigen::VectorXd &q_goal)

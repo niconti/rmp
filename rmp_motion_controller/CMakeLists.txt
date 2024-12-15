@@ -9,6 +9,7 @@ add_compile_options(-std=c++14)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  xmlrpcpp
   geometry_msgs
   urdf
   kdl_parser
@@ -58,6 +59,7 @@ catkin_package(
 #  LIBRARIES riemannian_motion_policies
   CATKIN_DEPENDS
     roscpp
+    xmlrpcpp
     geometry_msgs
     urdf
     kdl_parser
@@ -128,10 +130,10 @@ install(DIRECTORY include/${PROJECT_NAME}/
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_riemmanian_motion_policies.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-# endif()
-
-## Add folders to be run by python nosetests
-# catkin_add_nosetests(test)
+if(CATKIN_ENABLE_TESTING)
+  #catkin_add_gtest(redundancy_policy_test test/motion_policies/redundancy_policy_test.cpp)
+  #target_link_libraries(redundancy_policy_test ${catkin_LIBRARIES} ${EIGEN3_LIBRARIES} ${Boost_LIBRARIES} ${orocos_kdl_LIBRARIES})
+  find_package(rostest REQUIRED)
+  add_rostest_gtest(redundancy_policy_test test/redundancy_policy.test test/redundancy_policy_test.cpp)
+  target_link_libraries(redundancy_policy_test ${catkin_LIBRARIES} ${EIGEN3_LIBRARIES} ${Boost_LIBRARIES} ${orocos_kdl_LIBRARIES})
+endif()

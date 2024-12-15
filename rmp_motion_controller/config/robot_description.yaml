@@ -1,0 +1,37 @@
+#######################
+## Robot Description ##
+#######################
+
+collision_spheres:
+  - panda_link1:
+    - center: [0.00, 0.00, 0.00]
+      radius: 0.00
+  - panda_link2:
+    - center: [0.00, 0.00, 0.00]
+      radius: 0.00
+  - panda_link3:
+    - center: [0.00, 0.00, 0.00]
+      radius: 0.00
+    - center: [0.00, 0.00, -0.20]
+      radius: 0.00
+    - center: [0.00, 0.00, -0.40]
+      radius: 0.00
+  - panda_link4:
+    - center: [0.00, 0.00, 0.00]
+      radius: 0.00
+  - panda_link5: 
+    - center: [0.00, 0.00, 0.00]
+      radius: 0.00
+    - center: [0.00, 0.00, -0.20]
+      radius: 0.00
+    - center: [0.00, 0.00, -0.40]
+      radius: 0.00
+  - panda_link6:
+    - center: [0.00, 0.00, 0.00]
+      radius: 0.00
+  - panda_link7:
+    - center: [0.00, 0.00, 0.00]
+      radius: 0.00
+  - panda_link8:
+    - center: [0.00, 0.00, 0.00]
+      radius: 0.00

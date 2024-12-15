@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <package format="2">
-
   <name>rmp_motion_controller</name>
   <version>0.0.0</version>
   <description>
@@ -8,12 +7,13 @@
   </description>
   <license>TODO</license>
 
-  <author email="nicola@sysdesign.it">Nicola Conti</author>
-  <maintainer email="nicola@sysdesign.it">Nicola Conti</maintainer>
+  <author email="continicola89@gmail.com">Nicola Conti</author>
+  <maintainer email="continicola89@gmail.com">Nicola Conti</maintainer>
 
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>roscpp</depend>
+  <depend>xmlrpcpp</depend>
   <depend>geometry_msgs</depend>
   <depend>urdf</depend>
   <depend>kdl_parser</depend>

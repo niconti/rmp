@@ -68,7 +68,7 @@ namespace position_controllers
   /**
    * @brief Cartesian motion controller that transforms end-effector target motion into commands for a chain of position interfaces.
    */
-  typedef rmp::MotionController<hardware_interface::PositionJointInterface> RiemmanianMotionController;
+  typedef rmp::MotionController<hardware_interface::PositionJointInterface> RiemannianMotionController;
 }
 
 namespace velocity_controllers
@@ -76,9 +76,9 @@ namespace velocity_controllers
   /**
    * @brief Cartesian motion controller that transforms end-effector target motion into commands for a chain of velocity interfaces.
    */
-  typedef rmp::MotionController<hardware_interface::VelocityJointInterface> RiemmanianMotionController;
+  typedef rmp::MotionController<hardware_interface::VelocityJointInterface> RiemannianMotionController;
 }
 
-PLUGINLIB_EXPORT_CLASS(position_controllers::RiemmanianMotionController, controller_interface::ControllerBase)
-PLUGINLIB_EXPORT_CLASS(velocity_controllers::RiemmanianMotionController, controller_interface::ControllerBase)
+PLUGINLIB_EXPORT_CLASS(position_controllers::RiemannianMotionController, controller_interface::ControllerBase)
+PLUGINLIB_EXPORT_CLASS(velocity_controllers::RiemannianMotionController, controller_interface::ControllerBase)
 #endif
