@@ -90,10 +90,10 @@ private:
     q_sum.f = Eigen::VectorXd::Zero(n);
     q_sum.A = Eigen::MatrixXd::Identity(n,n);
 
-    for (const auto &link_policy : link_policies)
-    {
-      q_sum = q_sum + link_policy->computeMotionPolicy(jpos, jvel);
-    }
+    // for (const auto &link_policy : link_policies)
+    // {
+    //   q_sum = q_sum + link_policy->computeMotionPolicy(jpos, jvel);
+    // }
     {
       q_sum = q_sum + eef_policy->computeMotionPolicy(jpos, jvel);
     }

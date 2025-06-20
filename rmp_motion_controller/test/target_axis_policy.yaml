@@ -1,0 +1,6 @@
+target_axis_policy:
+  nu: 10            # Priority weight relative to other RMPs.
+  kp: 210.0         # Position gain.
+  kd: 60.0          # Damping gain.
+  b: 3000.0         # Scale factor controlling the strength of boosting near the position target.
+  ob: 0.08          # Length scale of the Gaussian controlling boosting near the position target.

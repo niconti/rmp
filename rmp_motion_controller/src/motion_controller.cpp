@@ -129,19 +129,19 @@ void MotionController<HardwareInterface>::starting(const ros::Time &time)
   //   Base::link_policies.push_back(link_policy);
   // }
 
-  // {
-  //   Eigen::Translation3d o_goal(0.5, 0.5, 0.5);
-  //   Eigen::Quaterniond R_goal(0, 1, 0, 0);
-  //   Eigen::Isometry3d X_goal = o_goal * R_goal;
+  {
+    Eigen::Translation3d o_goal(0.5, 0.5, 0.5);
+    Eigen::Quaterniond R_goal(0, 1, 0, 0);
+    Eigen::Isometry3d X_goal = o_goal * R_goal;
 
-  //   auto eef_policy = std::make_shared<rmp::EndEffectorPolicy>(Base::kdl_chain);
-  //   eef_policy->addTarget(X_goal);    
+    auto eef_policy = std::make_shared<rmp::EndEffectorPolicy>(Base::kdl_chain);
+    eef_policy->addTarget(X_goal);    
     
-  //   Eigen::Vector3d x_obs(0.5, 0, 0.5);
-  //   eef_policy->addObstacle(x_obs);
+    // Eigen::Vector3d x_obs(0.5, 0, 0.5);
+    // eef_policy->addObstacle(x_obs);
 
-  //   Base::eef_policy = eef_policy;
-  // }
+    Base::eef_policy = eef_policy;
+  }
 
   {
     Eigen::VectorXd q_goal(7);

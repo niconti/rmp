@@ -63,9 +63,9 @@ public:
     Eigen::Vector3d ux = Eigen::Vector3d::UnitX();
     Eigen::Vector3d uy = Eigen::Vector3d::UnitY();
     Eigen::Vector3d uz = Eigen::Vector3d::UnitZ();
-    std::cout << "x_axis: " << X_goal*ux << std::endl;
-    std::cout << "y_axis: " << X_goal*uy << std::endl;
-    std::cout << "z_axis: " << X_goal*uz << std::endl;
+    std::cout << "x_axis:\n" << X_goal*ux << std::endl;
+    std::cout << "y_axis:\n" << X_goal*uy << std::endl;
+    std::cout << "z_axis:\n" << X_goal*uz << std::endl;
     x_axis_policy->setGoal(X_goal*ux);
     y_axis_policy->setGoal(X_goal*uy);
     z_axis_policy->setGoal(X_goal*uz);
@@ -152,7 +152,7 @@ public:
     MotionPolicy q_sum;
     q_sum.f = Eigen::VectorXd::Zero(n);
     q_sum.A = Eigen::MatrixXd::Identity(n,n);
-   
+
     {
       auto x_rmp = target_policy;
       Eigen::MatrixXd J = jacobian.data.topRows(3);

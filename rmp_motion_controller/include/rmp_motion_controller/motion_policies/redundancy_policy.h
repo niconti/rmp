@@ -16,10 +16,10 @@ private:
 
   Eigen::VectorXd q_goal;
 
-  double nu;      // Priority weight relative to other RMPs
-  double kp;      // Position gain, determining how strongly configuration is pulled toward target
-  double kd;      // Damping gain, determining amount of “drag”
-  double theta;   // Distance in c-space at which the position correction vector is capped
+  double nu = 50;       // Priority weight relative to other RMPs
+  double kp = 100;      // Position gain, determining how strongly configuration is pulled toward target
+  double kd = 50;       // Damping gain, determining amount of “drag”
+  double theta = 0.5;   // Distance in c-space at which the position correction vector is capped
 
   std::function<Eigen::VectorXd(const Eigen::VectorXd&)> r;
 
@@ -41,11 +41,6 @@ public:
   {
     this->q = q;
     this->q_goal = q_goal;
-
-    kp = 1.0;
-    kd = 2.0;
-    nu = 1.0;
-    theta = 1.0;
 
     r = [=](const Eigen::VectorXd &p)
     {

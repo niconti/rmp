@@ -1,27 +1,27 @@
 #ifndef RMP_MOTION_CONTROLLER_MOTION_POLICIES_TARGET_AXIS_POLICY_H
 #define RMP_MOTION_CONTROLLER_MOTION_POLICIES_TARGET_AXIS_POLICY_H
 #include "rmp_motion_controller/motion_policies.h"
-// STL
 #include <cmath>
 #include <functional>
 // Eigen
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
+// XML-RPC
+#include <XmlRpcValue.h>
 
 
 namespace rmp {
-
 
 class TargetAxisPolicy : public XMotionPolicy {
 private:
 
   Eigen::Vector3d x_goal;
 
-  double kp = 210.0;            //
-  double kd = 0.0;             //
-  double nu = 10;               //
-  double b  = 3000;             //
-  double ob = 0.08;             //
+  double nu = 10;         // Priority weight relaive to other RMPs.
+  double kp = 210.0;      // Position gain.
+  double kd = 60.0;       // Damping gain.
+  double b  = 3000;       // Scale factor controlling the strength of boosting near the position target.
+  double ob = 0.08;       // Length scale of the Gaussian controlling boosting near the position target.
 
   std::function<double(const Eigen::Vector3d&)> beta;
 
@@ -61,6 +61,16 @@ public:
     {
       return std::exp(-std::pow((x_goal-x).norm(),2) / (2.0 * std::pow(ob,2)));
     };
+  }
+
+
+  void setConfig(const XmlRpc::XmlRpcValue &param)
+  {
+    nu = param["nu"];
+    kp = param["kp"];
+    kd = param["kd"];
+    b  = param["b"];
+    ob = param["ob"];
   }
 
 
