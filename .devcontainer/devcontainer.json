@@ -1,0 +1,37 @@
+{
+  "name": "RMP",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "privileged": true,
+  "workspaceMount": "type=bind,source=${localWorkspaceFolder},target=${containerWorkspaceFolder}/src/,consistency=cached",
+  "workspaceFolder": "/home/vscode/workspace",
+  "remoteUser": "vscode",
+  "containerEnv": {
+    "DISPLAY": "${localEnv:DISPLAY}"
+  },
+  // "mounts": [
+    //   { "type": "volume" ,"source": "/tmp/.X11-unix", "target": "/tmp/.X11-unix" }
+    // ],
+  "runArgs": [
+    "--volume", "/tmp/.X11-unix:/tmp/.X11-unix"
+  ],
+  "initializeCommand": {
+    "xhost": "xhost +local:docker"
+  },
+  "postCreateCommand": {
+    "rosdep_install": ". /opt/ros/noetic/setup.sh && rosdep update --rosdistro ${containerEnv:ROS_DISTRO} && rosdep install --from-paths src --ignore-src -y"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools-extension-pack",
+        "ms-iot.vscode-ros"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  }
+}
