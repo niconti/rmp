@@ -20,18 +20,23 @@ private:
   double kp = 100;      // Position gain, determining how strongly configuration is pulled toward target
   double kd = 50;       // Damping gain, determining amount of “drag”
   double theta = 0.5;   // Distance in c-space at which the position correction vector is capped
+  double m = 0.0;       // Additional c-space inertia
 
   std::function<Eigen::VectorXd(const Eigen::VectorXd&)> r;
 
 
   Eigen::VectorXd policy(const Eigen::VectorXd &q_pos, const Eigen::VectorXd &q_vel) override
   {
+    if (m != 0.0) 
+      return Eigen::VectorXd::Zero(q_pos.size());
     return kp * r(q_goal-q_pos) - kd * q_vel;
   }
 
   Eigen::MatrixXd metric(const Eigen::VectorXd &q_pos, const Eigen::VectorXd &q_vel) override
   {
     Eigen::MatrixXd I = Eigen::MatrixXd::Identity(q_pos.size(),q_pos.size());
+    if (m != 0.0) 
+      return m * I;
     return nu * I;
   }
 
@@ -60,6 +65,7 @@ public:
     kp = param["kp"];
     kd = param["kd"];
     theta = param["theta"];
+    m = param["m"];
   }
 
 

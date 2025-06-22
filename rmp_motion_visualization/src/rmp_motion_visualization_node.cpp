@@ -31,10 +31,10 @@ int main(int argc, char* argv[])
   imarker_pose.position.x = 0.5;
   imarker_pose.position.y = 0.0;
   imarker_pose.position.z = 0.5;
-  imarker_pose.orientation.x = 0.0;
+  imarker_pose.orientation.x = 1.0;
   imarker_pose.orientation.y = 0.0;
   imarker_pose.orientation.z = 0.0;
-  imarker_pose.orientation.w = 1.0;
+  imarker_pose.orientation.w = 0.0;
 
   rmp::IMarkerServer rmp_imarker_server(node);
 
@@ -43,10 +43,10 @@ int main(int argc, char* argv[])
     imarker_server.insert(imarker, boost::bind(&rmp::IMarkerServer::imarker_feedback_cb, &rmp_imarker_server, _1));
   }
 
-  {
-    auto imarker = rmp::create_obstacle_imarker("obstacle_marker", "OBSTACLE", imarker_pose, 0.1);
-    imarker_server.insert(imarker, boost::bind(&rmp::IMarkerServer::imarker_feedback_cb, &rmp_imarker_server, _1));
-  }
+  // {
+  //   auto imarker = rmp::create_obstacle_imarker("obstacle_marker", "OBSTACLE", imarker_pose, 0.1);
+  //   imarker_server.insert(imarker, boost::bind(&rmp::IMarkerServer::imarker_feedback_cb, &rmp_imarker_server, _1));
+  // }
 
   imarker_server.applyChanges();
 

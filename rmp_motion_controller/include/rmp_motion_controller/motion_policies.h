@@ -22,8 +22,8 @@ public:
 class XMotionPolicy : public MotionPolicy {
 protected:
 
-  virtual Eigen::Vector3d policy(const Eigen::Vector3d &x_pos, const Eigen::Vector3d &x_vel) = 0;
-  virtual Eigen::Matrix3d metric(const Eigen::Vector3d &x_pos, const Eigen::Vector3d &x_vel) = 0;
+  virtual Eigen::Vector3d policy(const Eigen::Vector3d &x_pos, const Eigen::Vector3d &x_vel){};
+  virtual Eigen::Matrix3d metric(const Eigen::Vector3d &x_pos, const Eigen::Vector3d &x_vel){};
 
 public:
 
@@ -33,6 +33,21 @@ public:
   {
     f = policy(x_pos,x_vel);
     A = metric(x_pos,x_vel);
+  }
+
+  XMotionPolicy operator+(const XMotionPolicy &other)
+  {
+    Eigen::VectorXd f1 = f;
+    Eigen::MatrixXd A1 = A;
+
+    Eigen::VectorXd f2 = other.f;
+    Eigen::MatrixXd A2 = other.A;
+
+    XMotionPolicy rmp;
+    rmp.f = pinv(A1 + A2) * (A1*f1 + A2*f2);
+    rmp.A = A1 + A2;
+
+    return rmp;
   }
 
 };

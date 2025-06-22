@@ -6,7 +6,6 @@ namespace rmp {
 
 Eigen::MatrixXd pinv(const Eigen::MatrixXd &A)
 {
-  // std::cout << "AT * A:" << std::endl << A.transpose() * A << std::endl;
   // return (A.transpose() * A).inverse() * A.transpose();
   return A.completeOrthogonalDecomposition().pseudoInverse();
 }

@@ -94,12 +94,20 @@ private:
     // {
     //   q_sum = q_sum + link_policy->computeMotionPolicy(jpos, jvel);
     // }
+    if (eef_policy)
     {
       q_sum = q_sum + eef_policy->computeMotionPolicy(jpos, jvel);
+      std::cout << "eef_qsum:\n";
+      std::cout << eef_policy->computeMotionPolicy(jpos, jvel).f << std::endl;
     }
+    if (joint_policy)
     {
       q_sum = q_sum + joint_policy->computeMotionPolicy(jpos, jvel);
+      std::cout << "joint_qsum:\n";
+      std::cout << joint_policy->computeMotionPolicy(jpos, jvel).f << std::endl;
     }
+    std::cout << "qsum:\n";
+    std::cout << q_sum.f << std::endl;
 
     /*
      * 4) The combined RMP is itself pulled back into an unconstrained space to

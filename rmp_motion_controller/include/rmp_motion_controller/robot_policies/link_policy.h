@@ -32,7 +32,6 @@ protected:
 
   std::shared_ptr<KDL::ChainFkSolverPos_recursive> fk_pos_solver;
   std::shared_ptr<KDL::ChainFkSolverVel_recursive> fk_vel_solver;
-
   std::shared_ptr<KDL::ChainJntToJacSolver> jacobian_solver;
 
   std::vector<std::shared_ptr<CollisionPolicy>> collision_policies;

@@ -45,9 +45,10 @@ private:
   Eigen::Matrix3d metric(const Eigen::Vector3d &x_pos, const Eigen::Vector3d &x_vel) override
   {
     Eigen::Matrix3d I = Eigen::Matrix3d::Identity();
-    Eigen::Matrix3d M_boosted;;
+    Eigen::Matrix3d M_boosted = (beta(x_pos) * b + (1 - beta(x_pos))) * nu * I;
+    Eigen::Matrix3d M = nu * I;
 
-    return (beta(x_pos) * b + (1 - beta(x_pos))) * nu * I;
+    return M_boosted;
   }
 
 public:

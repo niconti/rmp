@@ -130,12 +130,12 @@ void MotionController<HardwareInterface>::starting(const ros::Time &time)
   // }
 
   {
-    Eigen::Translation3d o_goal(0.5, 0.5, 0.5);
+    Eigen::Translation3d o_goal(0.5, 0.0, 0.5);
     Eigen::Quaterniond R_goal(0, 1, 0, 0);
     Eigen::Isometry3d X_goal = o_goal * R_goal;
 
     auto eef_policy = std::make_shared<rmp::EndEffectorPolicy>(Base::kdl_chain);
-    eef_policy->addTarget(X_goal);    
+    eef_policy->addTarget(X_goal);
     
     // Eigen::Vector3d x_obs(0.5, 0, 0.5);
     // eef_policy->addObstacle(x_obs);
@@ -200,6 +200,7 @@ void MotionController<HardwareInterface>::targetFrameCallback(const geometry_msg
   qz = target.pose.orientation.z;
   qw = target.pose.orientation.w;
   Eigen::Quaterniond R_goal(qw, qx, qy, qz);
+  // std::printf("R_goal: %.7f %.7f %.7f %.7f\n", qw, qx, qy, qz);
 
   Eigen::Isometry3d X_goal = o_goal * R_goal;
   Base::eef_policy->setTarget(X_goal);
