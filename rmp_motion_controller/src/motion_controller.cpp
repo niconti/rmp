@@ -80,6 +80,14 @@ bool MotionController<HardwareInterface>::init(HardwareInterface* robot_hw, ros:
     return false;
   }
 
+  for (const auto &joint_name : joint_names)
+  {
+    double lower = urdf_model.getJoint(joint_name)->limits->lower;
+    double upper = urdf_model.getJoint(joint_name)->limits->upper;
+    joint_limits[joint_name] = std::pair<double,double>(lower,upper);
+    ROS_INFO_NAMED(LOGNAME, "Joint '%s' limits: [%.2f, %.2f]", joint_name.c_str(), lower, upper);
+  }
+
   const int n_joints = joint_names.size();
   Base::q_pos = Eigen::VectorXd::Zero(n_joints);
   Base::q_vel = Eigen::VectorXd::Zero(n_joints);
@@ -131,7 +139,7 @@ void MotionController<HardwareInterface>::starting(const ros::Time &time)
 
   {
     Eigen::Translation3d o_goal(0.5, 0.0, 0.5);
-    Eigen::Quaterniond R_goal(0, 1, 0, 0);
+    Eigen::Quaterniond R_goal(0.0, 1.0, 0.0, 0.0);
     Eigen::Isometry3d X_goal = o_goal * R_goal;
 
     auto eef_policy = std::make_shared<rmp::EndEffectorPolicy>(Base::kdl_chain);
@@ -144,14 +152,21 @@ void MotionController<HardwareInterface>::starting(const ros::Time &time)
   }
 
   {
-    Eigen::VectorXd q_goal(7);
+    Eigen::VectorXd q_goal(joint_names.size());
     q_goal << 0.00, -0.80, 0.00, -2.35, 0.00, 1.57, 0.80;
 
     auto joint_policy = std::make_shared<rmp::JointPolicy>(Base::kdl_chain);
     joint_policy->addTarget(q_goal);
 
+    for (int i = 0; i < joint_names.size(); i++)
+    {
+      double lower = joint_limits.at(joint_names[i]).first;
+      double upper = joint_limits.at(joint_names[i]).second;
+      joint_policy->addJointLimits(lower, upper, i);
+    }
+    
     Base::joint_policy = joint_policy;
-  }
+  }  
 
 
   updateState();

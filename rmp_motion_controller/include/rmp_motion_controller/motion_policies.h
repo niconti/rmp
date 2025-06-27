@@ -71,5 +71,25 @@ public:
 
 };
 
+
+class JMotionPolicy : public MotionPolicy {
+protected:
+
+  virtual Eigen::VectorXd policy(const double &q_pos, const double &q_vel) = 0;
+  virtual Eigen::MatrixXd metric(const double &q_pos, const double &q_vel) = 0;
+
+public:
+
+  double x;
+
+  void update(const double &q_pos, const double &q_vel)
+  {
+    f = policy(q_pos,q_vel);
+    A = metric(q_pos,q_vel);
+  }
+
+};
+
+
 }  // namespace
 #endif

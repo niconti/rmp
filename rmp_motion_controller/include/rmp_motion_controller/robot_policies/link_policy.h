@@ -12,6 +12,7 @@
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainfksolvervel_recursive.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
+#include <kdl/chainjnttojacdotsolver.hpp>
 // Eigen
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
@@ -29,10 +30,12 @@ protected:
   int link_index = -1;
 
   KDL::Jacobian jacobian;
+  KDL::Jacobian jacobian_dot;
 
   std::shared_ptr<KDL::ChainFkSolverPos_recursive> fk_pos_solver;
   std::shared_ptr<KDL::ChainFkSolverVel_recursive> fk_vel_solver;
   std::shared_ptr<KDL::ChainJntToJacSolver> jacobian_solver;
+  std::shared_ptr<KDL::ChainJntToJacDotSolver> jacobian_dot_solver;
 
   std::vector<std::shared_ptr<CollisionPolicy>> collision_policies;
 
@@ -48,6 +51,7 @@ public:
     const int n_joints = kdl_chain.getNrOfJoints();
     jacobian.resize(n_joints);   
     jacobian_solver.reset(new KDL::ChainJntToJacSolver(kdl_chain));
+    jacobian_dot_solver.reset(new KDL::ChainJntToJacDotSolver(kdl_chain));
   }
 
 

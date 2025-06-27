@@ -12,6 +12,7 @@
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainfksolvervel_recursive.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
+#include <kdl/chainjnttojacdotsolver.hpp>
 // Eigen
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
@@ -49,7 +50,7 @@ public:
     Eigen::Vector3d ux = Eigen::Vector3d::UnitX() * UNIT_VECTOR_SCALE;
     Eigen::Vector3d uy = Eigen::Vector3d::UnitY() * UNIT_VECTOR_SCALE;
     Eigen::Vector3d uz = Eigen::Vector3d::UnitZ() * UNIT_VECTOR_SCALE;
-    x_axis_policy = std::make_shared<rmp::TargetAxisPolicy>(X_goal*ux,ux);
+    // x_axis_policy = std::make_shared<rmp::TargetAxisPolicy>(X_goal*ux,ux);
     // y_axis_policy = std::make_shared<rmp::TargetAxisPolicy>(X_goal*uy,uy);
     // z_axis_policy = std::make_shared<rmp::TargetAxisPolicy>(X_goal*uz,uz);
   }
@@ -78,6 +79,7 @@ public:
     KDL::Frame xpos;
     fk_pos_solver->JntToCart(jpos, xpos);
     jacobian_solver->JntToJac(jpos, jacobian);
+    // jacobian_dot_solver->JntToJacDot(jpos, jacobian_dot);
 
     /*
      * 1) An RMP X(fi,Ai) is created for each task map, where fi = xi_acc desired; */
@@ -187,8 +189,8 @@ public:
       KDL::Jacobian jacobian_offset = jacobian;
       jacobian_offset.changeRefPoint(point);
       Eigen::MatrixXd J = jacobian_offset.data.topRows(3);
-      std::cout << "pullback_trg:\n";
-      std::cout << pullback(*x_rmp, J).f << std::endl;
+      // std::cout << "pullback_trg:\n";
+      // std::cout << pullback(*x_rmp, J).f << std::endl;
 
       q_sum = q_sum + pullback(*x_rmp, J);
       x_sum = x_sum + *x_rmp;
@@ -203,8 +205,8 @@ public:
       KDL::Jacobian jacobian_offset = jacobian;
       jacobian_offset.changeRefPoint(point);
       Eigen::MatrixXd J = jacobian_offset.data.topRows(3);
-      std::cout << "pullback_x_axis:\n";
-      std::cout << pullback(*x_rmp, J).f << std::endl;
+      // std::cout << "pullback_x_axis:\n";
+      // std::cout << pullback(*x_rmp, J).f << std::endl;
       
       q_sum = q_sum + pullback(*x_rmp, J);
       x_sum = x_sum + *x_rmp;
@@ -219,8 +221,8 @@ public:
       KDL::Jacobian jacobian_offset = jacobian;
       jacobian_offset.changeRefPoint(point);
       Eigen::MatrixXd J = jacobian_offset.data.topRows(3);
-      std::cout << "pullback_y_axis:\n";
-      std::cout << pullback(*x_rmp, J).f << std::endl;
+      // std::cout << "pullback_y_axis:\n";
+      // std::cout << pullback(*x_rmp, J).f << std::endl;
       
       q_sum = q_sum + pullback(*x_rmp, J);
       x_sum = x_sum + *x_rmp;
@@ -235,8 +237,8 @@ public:
       KDL::Jacobian jacobian_offset = jacobian;
       jacobian_offset.changeRefPoint(point);
       Eigen::MatrixXd J = jacobian_offset.data.topRows(3);
-      std::cout << "pullback_z_axis:\n";
-      std::cout << pullback(*x_rmp, J).f << std::endl;
+      // std::cout << "pullback_z_axis:\n";
+      // std::cout << pullback(*x_rmp, J).f << std::endl;
 
       q_sum = q_sum + pullback(*x_rmp, J);
       x_sum = x_sum + *x_rmp;

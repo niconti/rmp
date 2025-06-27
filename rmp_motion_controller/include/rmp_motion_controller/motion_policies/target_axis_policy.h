@@ -17,10 +17,10 @@ private:
 
   Eigen::Vector3d x_goal;
 
-  double nu = 10;         // Priority weight relaive to other RMPs.
+  double nu = 100;         // Priority weight relaive to other RMPs.
   double kp = 210.0;      // Position gain.
   double kd = 60.0;       // Damping gain.
-  double b  = 3000;       // Scale factor controlling the strength of boosting near the position target.
+  double b  = 3000.0;     // Scale factor controlling the strength of boosting near the position target.
   double ob = 0.08;       // Length scale of the Gaussian controlling boosting near the position target.
 
   std::function<double(const Eigen::Vector3d&)> beta;
@@ -47,7 +47,6 @@ private:
     Eigen::Matrix3d I = Eigen::Matrix3d::Identity();
     Eigen::Matrix3d M_boosted = (beta(x_pos) * b + (1 - beta(x_pos))) * nu * I;
     Eigen::Matrix3d M = nu * I;
-
     return M_boosted;
   }
 

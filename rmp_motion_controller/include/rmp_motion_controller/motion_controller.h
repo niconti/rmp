@@ -2,6 +2,7 @@
 #define RMP_MOTION_CONTROLLER_MOTION_CONTROLLER_H
 #include <string>
 #include <vector>
+#include <map>
 // ROS
 #include <ros/ros.h>
 #include <ros/console.h>
@@ -29,6 +30,7 @@ class MotionController : public MotionControllerBase<HardwareInterface> {
   const std::string ROBOT_DESCRIPTION = "/robot_description";
 
   std::vector<std::string> joint_names;
+  std::map<std::string,std::pair<double,double>> joint_limits;
   std::string base_frame;
   std::string eef_frame;
 

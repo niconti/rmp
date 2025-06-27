@@ -13,6 +13,7 @@
 //
 #include "rmp_motion_controller/robot_policies.h"
 #include "rmp_motion_controller/motion_policies/redundancy_policy.h"
+#include "rmp_motion_controller/motion_policies/joint_limit_policy.h"
 
 
 namespace rmp {
@@ -22,6 +23,7 @@ class JointPolicy : public RobotPolicy {
 protected:
 
   std::shared_ptr<RedundancyPolicy> redundancy_policy;
+  std::vector<std::shared_ptr<JointLimitPolicy>> joint_limit_policies;
 
 public:
 
@@ -33,8 +35,15 @@ public:
 
   void addTarget(const Eigen::VectorXd &q_goal)
   {
-    auto q_rmp = std::make_shared<rmp::RedundancyPolicy>(q_goal);
+    auto q_rmp = std::make_shared<RedundancyPolicy>(q_goal);
     redundancy_policy = q_rmp;
+  }
+
+
+  void addJointLimits(double q_lower, double q_upper, int q_index)
+  {
+    auto q_rmp = std::make_shared<JointLimitPolicy>(q_lower, q_upper, q_index);
+    joint_limit_policies.push_back(q_rmp);
   }
 
 
@@ -44,10 +53,18 @@ public:
     /*
      * 1) An RMP X(fi,Ai) is created for each task map, where fi = xi_acc desired; */
 
+    if (redundancy_policy)
     {
       auto q_pos = jpos.data;
       auto q_vel = jvel.data;
       redundancy_policy->update(q_pos,q_vel);
+    }
+
+    for (int i = 0; i < joint_limit_policies.size(); i++)
+    {
+      auto q_pos = jpos.data;
+      auto q_vel = jvel.data;
+      joint_limit_policies[i]->update(q_pos,q_vel);
     }
 
     /*
@@ -62,8 +79,14 @@ public:
     q_sum.f = Eigen::VectorXd::Zero(n);
     q_sum.A = Eigen::MatrixXd::Identity(n,n);
 
+    if (redundancy_policy)
     {
       q_sum = q_sum + *redundancy_policy;
+    }
+
+    for (int i = 0; i < joint_limit_policies.size(); i++)
+    {
+      q_sum = q_sum + *joint_limit_policies[i];
     }
 
     /*

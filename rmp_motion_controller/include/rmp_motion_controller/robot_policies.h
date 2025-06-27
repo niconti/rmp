@@ -28,7 +28,6 @@ protected:
     MotionPolicy q_rmp;
     q_rmp.f = pinv(J.transpose() * A * J) * J.transpose() * A * f;
     q_rmp.A = J.transpose() * A * J;
-
     return q_rmp;
   }
 
