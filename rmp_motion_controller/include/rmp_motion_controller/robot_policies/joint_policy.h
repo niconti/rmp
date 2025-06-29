@@ -14,6 +14,7 @@
 #include "rmp_motion_controller/robot_policies.h"
 #include "rmp_motion_controller/motion_policies/redundancy_policy.h"
 #include "rmp_motion_controller/motion_policies/joint_limit_policy.h"
+#include "rmp_motion_controller/motion_policies/joint_speed_limit_policy.h"
 
 
 namespace rmp {
@@ -24,6 +25,7 @@ protected:
 
   std::shared_ptr<RedundancyPolicy> redundancy_policy;
   std::vector<std::shared_ptr<JointLimitPolicy>> joint_limit_policies;
+  std::vector<std::shared_ptr<JointSpeedLimitPolicy>> joint_speed_limit_policies;
 
 public:
 
@@ -47,6 +49,13 @@ public:
   }
 
 
+  void addJointSpeedLimit(double v_max, int q_index)
+  {
+    auto q_rmp = std::make_shared<JointSpeedLimitPolicy>(v_max, q_index);
+    joint_speed_limit_policies.push_back(q_rmp);
+  }
+
+
   MotionPolicy computeMotionPolicy(const KDL::JntArray &jpos, const KDL::JntArray &jvel)
   {
 
@@ -65,6 +74,13 @@ public:
       auto q_pos = jpos.data;
       auto q_vel = jvel.data;
       joint_limit_policies[i]->update(q_pos,q_vel);
+    }
+
+    for (int i = 0; i < joint_speed_limit_policies.size(); i++)
+    {
+      auto q_pos = jpos.data;
+      auto q_vel = jvel.data;
+      joint_speed_limit_policies[i]->update(q_pos,q_vel);
     }
 
     /*
@@ -86,7 +102,16 @@ public:
 
     for (int i = 0; i < joint_limit_policies.size(); i++)
     {
+      // std::cout << i <<", joint_limit_qsum:\n";
+      // std::cout << joint_limit_policies[i]->f << std::endl;
+      // std::cout << i <<", joint_limit_qsum:\n";
+      // std::cout << joint_limit_policies[i]->A << std::endl;
       q_sum = q_sum + *joint_limit_policies[i];
+    }
+
+    for (int i = 0; i < joint_speed_limit_policies.size(); i++)
+    {
+      q_sum = q_sum + *joint_speed_limit_policies[i];
     }
 
     /*

@@ -31,6 +31,7 @@ class MotionController : public MotionControllerBase<HardwareInterface> {
 
   std::vector<std::string> joint_names;
   std::map<std::string,std::pair<double,double>> joint_limits;
+  std::map<std::string,double> joint_speed_limits;
   std::string base_frame;
   std::string eef_frame;
 

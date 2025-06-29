@@ -26,19 +26,26 @@ private:
   double ep = 1e-2;     // Offset limiting divergence of position barrier strength
 
   std::function<double(double)> x;
+  std::function<double(double)> x_dot;
 
 
   Eigen::VectorXd policy(const Eigen::VectorXd &q_pos, const Eigen::VectorXd &q_vel) override
   {
-    Eigen::VectorXd q = Eigen::VectorXd::Zero(q_pos.size());
-    q[q_index] = kp / (std::pow(x(q_pos[q_index]),2) / std::pow(lp,2) + ep) - kd * x(q_vel[q_index]);
-    return q;
+    double x_pos = x(q_pos[q_index]);
+    double x_vel = x_dot(q_vel[q_index]);
+    double x_acc = kp / (std::pow(x_pos,2) / std::pow(lp,2) + ep) - kd * x_vel;
+    Eigen::VectorXd f = Eigen::VectorXd::Zero(q_pos.size());
+    f(q_index) = x_acc;
+    return f;
   }
 
   Eigen::MatrixXd metric(const Eigen::VectorXd &q_pos, const Eigen::VectorXd &q_vel) override
   {
+    double x_pos = x(q_pos[q_index]);
+    double x_vel = x_dot(q_vel[q_index]);
+    double m = (1.0 - 1.0 / (1.0 + std::exp(-x_vel / vm))) * nu / ((x_pos / lm) + em);
     Eigen::MatrixXd M = Eigen::MatrixXd::Identity(q_pos.size(),q_pos.size());
-    M(q_index, q_index) = (1.0 - 1.0 / (1.0 + std::exp(-x(q_vel[q_index]) / vm))) * nu / (x(q_pos[q_index]) / lm + em);
+    M(q_index, q_index) = m;
     return M;
   }
 
@@ -53,6 +60,11 @@ public:
     x = [=](double q)
     {
       return (q - q_lower) / (q_upper - q_lower);
+    };
+
+    x_dot = [=](double q_dot)
+    {
+      return q_dot / (q_upper - q_lower);
     };
   }
 

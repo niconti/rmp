@@ -16,7 +16,7 @@ private:
 
   Eigen::VectorXd q_goal;
 
-  double nu = 50;       // Priority weight relative to other RMPs
+  double nu = 0;       // Priority weight relative to other RMPs
   double kp = 100;      // Position gain, determining how strongly configuration is pulled toward target
   double kd = 50;       // Damping gain, determining amount of “drag”
   double theta = 0.5;   // Distance in c-space at which the position correction vector is capped

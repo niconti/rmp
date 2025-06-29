@@ -22,7 +22,7 @@
 #include "rmp_motion_controller/motion_policies/target_axis_policy.h"
 #include "rmp_motion_controller/robot_policies/link_policy.h"
 
-#define UNIT_VECTOR_SCALE   0.1;
+#define UNIT_VECTOR_SCALE   1.0;
 
 
 namespace rmp {
@@ -50,9 +50,9 @@ public:
     Eigen::Vector3d ux = Eigen::Vector3d::UnitX() * UNIT_VECTOR_SCALE;
     Eigen::Vector3d uy = Eigen::Vector3d::UnitY() * UNIT_VECTOR_SCALE;
     Eigen::Vector3d uz = Eigen::Vector3d::UnitZ() * UNIT_VECTOR_SCALE;
-    // x_axis_policy = std::make_shared<rmp::TargetAxisPolicy>(X_goal*ux,ux);
-    // y_axis_policy = std::make_shared<rmp::TargetAxisPolicy>(X_goal*uy,uy);
-    // z_axis_policy = std::make_shared<rmp::TargetAxisPolicy>(X_goal*uz,uz);
+    x_axis_policy = std::make_shared<rmp::TargetAxisPolicy>(R_goal*ux,ux);
+    // y_axis_policy = std::make_shared<rmp::TargetAxisPolicy>(R_goal*uy,uy);
+    // z_axis_policy = std::make_shared<rmp::TargetAxisPolicy>(R_goal*uz,uz);
   }
 
 
@@ -68,9 +68,9 @@ public:
     // std::cout << "x_axis:\n" << X_goal*ux << std::endl;
     // std::cout << "y_axis:\n" << X_goal*uy << std::endl;
     // std::cout << "z_axis:\n" << X_goal*uz << std::endl;
-    if (x_axis_policy) x_axis_policy->setGoal(X_goal*ux);
-    if (y_axis_policy) y_axis_policy->setGoal(X_goal*uy);
-    if (z_axis_policy) z_axis_policy->setGoal(X_goal*uz);
+    if (x_axis_policy) x_axis_policy->setGoal(R_goal*ux);
+    if (y_axis_policy) y_axis_policy->setGoal(R_goal*uy);
+    if (z_axis_policy) z_axis_policy->setGoal(R_goal*uz);
   }
 
 
@@ -106,7 +106,7 @@ public:
       auto x_rmp = x_axis_policy;
       Eigen::Isometry3d A;
       tf::transformKDLToEigen(xpos, A);
-      Eigen::Vector3d x_pos = A * x_rmp->x;
+      Eigen::Vector3d x_pos = A.rotation() * x_rmp->x;
 
       KDL::Vector point;
       tf::vectorEigenToKDL(x_rmp->x, point);
@@ -123,7 +123,7 @@ public:
       auto x_rmp = y_axis_policy;
       Eigen::Isometry3d A;
       tf::transformKDLToEigen(xpos, A);
-      Eigen::Vector3d x_pos = A * x_rmp->x;
+      Eigen::Vector3d x_pos = A.rotation() * x_rmp->x;
 
       KDL::Vector point;
       tf::vectorEigenToKDL(x_rmp->x, point);
@@ -140,7 +140,7 @@ public:
       auto x_rmp = z_axis_policy;
       Eigen::Isometry3d A;
       tf::transformKDLToEigen(xpos, A);
-      Eigen::Vector3d x_pos = A * x_rmp->x;
+      Eigen::Vector3d x_pos = A.rotation() * x_rmp->x;
 
       KDL::Vector point;
       tf::vectorEigenToKDL(x_rmp->x, point);

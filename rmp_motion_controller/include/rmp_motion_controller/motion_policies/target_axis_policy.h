@@ -12,6 +12,12 @@
 
 namespace rmp {
 
+/** 
+ *  @brief    Axis Target RPM
+ *  @details  Drives x-, y-, or z axis of end effector frame toward target orientation. This RPM is used for general
+ *            orientation targets (where an axis target RPM is added for each of three axes) as well as for "partial pose" targets
+ *            where only alignment of a single axis is desired.
+ */
 class TargetAxisPolicy : public XMotionPolicy {
 private:
 
@@ -26,20 +32,25 @@ private:
   std::function<double(const Eigen::Vector3d&)> beta;
 
 
-  Eigen::Vector3d v(const Eigen::Vector3d &x_goal, const Eigen::Vector3d &x)
+  Eigen::Vector3d n(const Eigen::Vector3d &x)
   {
-    return x_goal - x;
+    return x / x.norm();
   }
 
-  Eigen::Vector3d v_norm(const Eigen::Vector3d &x_goal, const Eigen::Vector3d &x)
+  Eigen::Vector3d n_dot(const Eigen::Vector3d &x_dot)
   {
-    return v(x_goal,x) / v(x_goal,x).norm();
+    return x_dot / x_goal.norm();
   }
 
 
   Eigen::Vector3d policy(const Eigen::Vector3d &x_pos, const Eigen::Vector3d &x_vel) override
   {
-    return kp * (x_goal - x_pos) - kd * x_vel;
+    Eigen::Vector3d n0 = n(x_goal);
+    Eigen::Vector3d n_pos = n(x_pos);
+    // Eigen::Vector3d n_vel = n_dot(x_vel);
+    Eigen::Vector3d n_vel = x_vel / (x_pos.norm());
+    Eigen::Vector3d n_acc = kp * (n0 - n_pos) - kd * n_vel;
+    return n_acc;
   }
 
   Eigen::Matrix3d metric(const Eigen::Vector3d &x_pos, const Eigen::Vector3d &x_vel) override
@@ -47,7 +58,7 @@ private:
     Eigen::Matrix3d I = Eigen::Matrix3d::Identity();
     Eigen::Matrix3d M_boosted = (beta(x_pos) * b + (1 - beta(x_pos))) * nu * I;
     Eigen::Matrix3d M = nu * I;
-    return M_boosted;
+    return M;
   }
 
 public:

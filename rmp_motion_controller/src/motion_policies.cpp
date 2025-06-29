@@ -12,10 +12,14 @@ MotionPolicy MotionPolicy::operator+(const MotionPolicy &other)
   Eigen::VectorXd f2 = other.f;
   Eigen::MatrixXd A2 = other.A;
 
-  MotionPolicy rmp;
-  rmp.f = pinv(A1 + A2) * (A1*f1 + A2*f2);
-  rmp.A = A1 + A2;
+  // Ax = b
+  Eigen::MatrixXd A = A1 + A2;
+  Eigen::VectorXd b = (A1*f1 + A2*f2);
+  Eigen::VectorXd x = A.partialPivLu().solve(b);
 
+  MotionPolicy rmp;
+  rmp.f = x;
+  rmp.A = A;
   return rmp;
 }
 

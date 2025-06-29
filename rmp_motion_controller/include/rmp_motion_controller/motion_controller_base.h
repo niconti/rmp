@@ -54,8 +54,8 @@ protected:
   void computeMotionPolicies()
   {
     KDL::JntArray jvel;
-    jvel.resize(7);
-    for (int i=0; i < q_vel.size(); i++)
+    jvel.resize(q_vel.size());
+    for (int i = 0; i < q_vel.size(); i++)
     {
       jvel(i) = q_vel(i);
     }
@@ -88,7 +88,7 @@ private:
 
     MotionPolicy q_sum;
     q_sum.f = Eigen::VectorXd::Zero(n);
-    q_sum.A = Eigen::MatrixXd::Identity(n,n);
+    q_sum.A = Eigen::MatrixXd::Zero(n,n);
 
     // for (const auto &link_policy : link_policies)
     // {

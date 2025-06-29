@@ -82,10 +82,19 @@ bool MotionController<HardwareInterface>::init(HardwareInterface* robot_hw, ros:
 
   for (const auto &joint_name : joint_names)
   {
-    double lower = urdf_model.getJoint(joint_name)->limits->lower;
-    double upper = urdf_model.getJoint(joint_name)->limits->upper;
+    auto joint = urdf_model.getJoint(joint_name);
+    double lower = joint->limits->lower;
+    double upper = joint->limits->upper;
     joint_limits[joint_name] = std::pair<double,double>(lower,upper);
     ROS_INFO_NAMED(LOGNAME, "Joint '%s' limits: [%.2f, %.2f]", joint_name.c_str(), lower, upper);
+  }
+
+  for (const auto &joint_name : joint_names)
+  {
+    auto joint = urdf_model.getJoint(joint_name);
+    double speed = joint->limits->velocity * 1.0;
+    joint_speed_limits[joint_name] = speed;
+    ROS_INFO_NAMED(LOGNAME, "Joint '%s' speed limit: %.3f rad/s", joint_name.c_str(), speed);
   }
 
   const int n_joints = joint_names.size();
@@ -163,6 +172,12 @@ void MotionController<HardwareInterface>::starting(const ros::Time &time)
       double lower = joint_limits.at(joint_names[i]).first;
       double upper = joint_limits.at(joint_names[i]).second;
       joint_policy->addJointLimits(lower, upper, i);
+    }
+
+    for (int i = 0; i < joint_names.size(); i++)
+    {
+      double speed = joint_speed_limits.at(joint_names[i]);
+      joint_policy->addJointSpeedLimit(speed, i);
     }
     
     Base::joint_policy = joint_policy;
